@@ -1,0 +1,138 @@
+<section class="dashboard-shell">
+  <app-sidebar></app-sidebar>
+
+  <div class="dashboard-content">
+    <header class="dashboard-header">
+      <h1>Personal Finance Dashboard</h1>
+      <div class="header-actions">
+        <input type="search" placeholder="Search..." aria-label="Search" />
+        <button type="button" (click)="openAddTransactionMenu()">Add Transaction</button>
+      </div>
+    </header>
+
+    <section class="summary-grid" aria-label="Summary cards">
+      @for (card of summaryCards; track card.title) {
+        <article class="summary-card">
+          <div class="summary-top">
+            <span>{{ card.title }}</span>
+            @if (card.trend !== 'flat') {
+              <span class="trend" [class.trend--down]="card.trend === 'down'">
+                {{ card.trend === 'up' ? '▲' : '▼' }}
+              </span>
+            }
+          </div>
+          <p>{{ card.amount }}</p>
+        </article>
+      }
+    </section>
+
+    <section class="placeholder-grid" aria-label="Overview placeholders">
+      <article class="placeholder-card">
+        <h2>Balance Overview</h2>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="balanceOverviewData"
+            [options]="balanceOverviewOptions"
+            [type]="balanceOverviewType">
+          </canvas>
+        </div>
+
+      </article>
+      <article class="placeholder-card">
+        <h2>Expense Breakdown</h2>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="pieChartData"
+            [options]="pieChartOptions"
+            [type]="pieChartType">
+          </canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="table-card" aria-label="Recent transactions">
+      <div class="table-header">
+        <h2>Recent Transactions</h2>
+      </div>
+
+      <div class="table-wrapper" [class.table-wrapper--expanded]="isExpanded">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of visibleTransactions; track item.category + item.amount) {
+              <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.category }}</td>
+                <td>{{ item.description }}</td>
+                <td [class.amount--expense]="item.status === 'Expense'">{{ item.amount }}</td>
+                <td>
+                  <span class="status" [class.status--expense]="item.status === 'Expense'">
+                    {{ item.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="view-all-row">
+        <button #toggleButton type="button" (click)="onViewAll(toggleButton)">{{ isExpanded ? 'Show Less' : 'View All' }}</button>
+      </div>
+    </section>
+  </div>
+</section>
+
+@if (isAddTransactionMenuOpen) {
+  <div class="transaction-modal-backdrop" (click)="closeAddTransactionMenu()">
+    <section class="transaction-modal" (click)="$event.stopPropagation()">
+      <h2>Add Transaction</h2>
+      <form #transactionForm (submit)="addTransaction(transactionForm); $event.preventDefault()">
+        <label>
+          Date
+          <input type="date" name="date" required />
+        </label>
+        <label>
+          Category
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="Labour">Labour</option>
+            <option value="Legal">Legal</option>
+            <option value="Production">Production</option>
+            <option value="License">License</option>
+            <option value="Facilities">Facilities</option>
+            <option value="Taxes">Taxes</option>
+            <option value="Insurance">Insurance</option>
+          </select>
+        </label>
+        <label>
+          Description
+          <input type="text" name="description" placeholder="Enter details" required />
+        </label>
+        <label>
+          Amount
+          <input type="number" name="amount" min="1" step="1" placeholder="0" required />
+        </label>
+        <label>
+          Type
+          <select name="status" required>
+            <option value="Expense">Expense</option>
+            <option value="Income">Income</option>
+          </select>
+        </label>
+        <div class="transaction-modal-actions">
+          <button type="button" class="button-secondary" (click)="closeAddTransactionMenu()">Cancel</button>
+          <button type="submit">Save</button>
+        </div>
+      </form>
+    </section>
+  </div>
+}

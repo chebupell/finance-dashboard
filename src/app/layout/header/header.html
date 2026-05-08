@@ -1,0 +1,35 @@
+<header class="app-header">
+  <div class="header-container" onClick="window.location.href = '/'">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <img
+        src="/images/logo.png"
+        alt="Personal Finance Dashboard Logo"
+        class="logo-image"
+        width="64"
+        height="64"
+      />
+      <span class="logo-text">{{ title() }}</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="header-nav" aria-label="Main navigation">
+      <button
+        type="button"
+        class="nav-link"
+        (click)="onLogin()"
+        aria-label="Navigate to login page"
+      >
+        Log In
+      </button>
+      <button
+        type="button"
+        class="nav-link nav-link--primary"
+        (click)="onSignUp()"
+        aria-label="Navigate to sign up page"
+      >
+        Sign Up
+      </button>
+    </nav>
+  </div>
+</header>

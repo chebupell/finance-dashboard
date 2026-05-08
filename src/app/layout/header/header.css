@@ -1,0 +1,149 @@
+:host {
+  --primary-color: #1e40af;
+  --primary-hover: #1e3a8a;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --bg-white: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.app-header {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 2rem;
+  max-width: 1920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo-section:hover {
+  opacity: 0.8;
+}
+
+.logo-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.logo-text {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Navigation */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+  border-radius: 6px;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+}
+
+.nav-link:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.nav-link--primary {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.625rem 1.25rem;
+}
+
+.nav-link--primary:hover {
+  background: var(--primary-hover);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .logo-text {
+    font-size: 12px;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+  }
+
+  .nav-link--primary {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0.75rem;
+  }
+
+  .logo-section {
+    gap: 0.5rem;
+  }
+
+  .logo-image {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .header-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0.5rem;
+    font-size: 12px;
+  }
+}

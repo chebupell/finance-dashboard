@@ -1,0 +1,186 @@
+<div class="sign-up-container">
+  <div class="sign-up-wrapper">
+    <div class="form-container">
+      <div class="form-content">
+        <h1>Create Your Account</h1>
+        <p class="subtitle">Manage your finances with ease.</p>
+
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Full Name Field -->
+          <div class="form-group">
+            <label for="fullName" class="form-label">
+              <img src="images/user.png" class="label-icon-img" alt="User Icon">
+              Full Name
+            </label>
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              placeholder="Enter your full name"
+              class="form-input"
+              [attr.aria-invalid]="signUpForm.get('fullName')?.invalid && signUpForm.get('fullName')?.touched"
+              [attr.aria-describedby]="signUpForm.get('fullName')?.invalid ? 'fullName-error' : null"
+            />
+            @if (fullNameError && signUpForm.get('fullName')?.touched) {
+              <span id="fullName-error" class="error-message">{{ fullNameError }}</span>
+            }
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              <img src="images/email.png" class="label-icon-img" alt="Email Icon">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              class="form-input"
+              [attr.aria-invalid]="signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched"
+              [attr.aria-describedby]="signUpForm.get('email')?.invalid ? 'email-error' : null"
+            />
+            @if (emailError && signUpForm.get('email')?.touched) {
+              <span id="email-error" class="error-message">{{ emailError }}</span>
+            }
+          </div>
+
+          <!-- Password Section -->
+          <fieldset class="password-fieldset">
+            <legend class="password-legend">
+              <img src="/images/padlock.png" class="label-icon-img" alt="Padlock Icon">
+              Password
+            </legend>
+
+            <div class="form-group">
+              <label for="password" class="form-label sr-only">
+                Create a password
+              </label>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Create a password"
+                class="form-input"
+                [attr.aria-invalid]="signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched"
+                [attr.aria-describedby]="signUpForm.get('password')?.invalid ? 'password-error' : 'password-hint'"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword" class="form-label sr-only">
+                Confirm password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm password"
+                class="form-input"
+                [attr.aria-invalid]="!passwordsMatch()"
+                [attr.aria-describedby]="!passwordsMatch() ? 'password-match-error' : null"
+              />
+            </div>
+
+            <p id="password-hint" class="password-hint">At least 8 characters</p>
+
+            @if (passwordError && signUpForm.get('password')?.touched) {
+              <span id="password-error" class="error-message">{{ passwordError }}</span>
+            }
+
+            @if (!passwordsMatch()) {
+              <span id="password-match-error" class="error-message">Passwords do not match</span>
+            }
+          </fieldset>
+
+          <!-- Checkboxes Section -->
+          <div class="checkboxes-section">
+
+            <div class="checkbox-group">
+              <input
+                id="enableAutoLogin"
+                type="checkbox"
+                formControlName="enableAutoLogin"
+                class="form-checkbox"
+                aria-label="Remember me"
+              />
+              <label for="enableAutoLogin" class="checkbox-label">
+                Remember me
+              </label>
+            </div>
+
+            <!-- Terms Agreement -->
+            <div class="checkbox-group">
+              <input
+                id="agreeToTerms"
+                type="checkbox"
+                formControlName="agreeToTerms"
+                class="form-checkbox"
+                [attr.aria-invalid]="signUpForm.get('agreeToTerms')?.invalid && signUpForm.get('agreeToTerms')?.touched"
+                aria-describedby="terms-label"
+              />
+              <label id="terms-label" for="agreeToTerms" class="checkbox-label">
+                I agree to the
+                <a href="#" class="link-text" target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </a>
+                and
+                <a href="#" class="link-text" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="sign-up-button"
+            [disabled]="signUpForm.invalid || isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="spinner"></span>
+            }
+            Sign Up
+          </button>
+        </form>
+
+        <!-- OAuth Sign Up -->
+        <div class="oauth-section">
+          <p class="oauth-text">Or sign up with</p>
+          <div class="oauth-buttons">
+            <button
+              type="button"
+              class="oauth-button"
+              (click)="onGoogleSignUp()"
+              aria-label="Sign up with Google"
+            >
+              Sign up with Google
+            </button>
+            <button
+              type="button"
+              class="oauth-button"
+              (click)="onFacebookSignUp()"
+              aria-label="Sign up with Facebook"
+            >
+              Sign up with Facebook
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Illustration -->
+      <div class="form-illustration" aria-hidden="true">
+        <div class="illustration-placeholder">
+          <img src="images/woman.png" alt="" class="woman-image">
+          <img src="images/list.png" alt="" class="floating-icon list-icon">
+          <img src="images/diagramma.png" alt="" class="floating-icon diagram-icon">
+          <img src="images/graph.png" alt="" class="floating-icon graph-icon">
+          <img src="images/dollar.png" alt="" class="floating-icon dollar-icon">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

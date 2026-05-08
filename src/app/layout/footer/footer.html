@@ -1,0 +1,61 @@
+<footer class="app-footer" role="contentinfo">
+  <div class="footer-container">
+    <!-- Footer Content -->
+    <div class="footer-content">
+      <!-- Company Info -->
+      <div class="footer-section">
+        <h3 class="footer-title">Company</h3>
+        <nav aria-label="Company links">
+          <ul class="footer-links">
+            @for (link of companyLinks(); track link.label) {
+              <li>
+                <a [href]="link.url" class="footer-link" target="_blank" rel="noopener noreferrer">
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Legal Links -->
+      <div class="footer-section">
+        <h3 class="footer-title">Legal</h3>
+        <nav aria-label="Legal links">
+          <ul class="footer-links">
+            @for (link of legalLinks(); track link.label) {
+              <li>
+                <a [href]="link.url" class="footer-link" target="_blank" rel="noopener noreferrer">
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Social Links -->
+      <div class="footer-section">
+        <h3 class="footer-title">Follow</h3>
+        <nav aria-label="Social media links">
+          <ul class="footer-links">
+            @for (link of socialLinks(); track link.label) {
+              <li>
+                <a [href]="link.url" class="footer-link" target="_blank" rel="noopener noreferrer">
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        © {{ year() }} {{ companyName() }} | {{ repository() }}
+      </p>
+    </div>
+  </div>
+</footer>
