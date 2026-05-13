@@ -14,7 +14,10 @@ export interface UserData {
 })
 export class Auth {
   isLoggedIn(): boolean {
-    return localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true';
+    return (
+      localStorage.getItem('isLoggedIn') === 'true' ||
+      sessionStorage.getItem('isLoggedIn') === 'true'
+    );
   }
 
   logout(): void {
@@ -34,6 +37,9 @@ export class Auth {
   }
 
   getUserData(): UserData | null {
-    return JSON.parse(localStorage.getItem('userData') || '{}') as UserData || JSON.parse(sessionStorage.getItem('userData') || '{}') as UserData;
+    return (
+      (JSON.parse(localStorage.getItem('userData') || '{}') as UserData) ||
+      (JSON.parse(sessionStorage.getItem('userData') || '{}') as UserData)
+    );
   }
 }
