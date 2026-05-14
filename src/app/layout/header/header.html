@@ -13,7 +13,19 @@
     </div>
 
     <!-- Navigation Links -->
+    @if (isLoggedIn()) {
     <nav class="header-nav" aria-label="Main navigation">
+      <button
+        type="button"
+        class="nav-link nav-link--primary"
+        (click)="onLogout()"
+        aria-label="Log out"
+      >
+        Log Out
+      </button>
+    </nav>
+    } @else {
+    <nav class="header-nav" aria-label="Guest navigation">
       <button
         type="button"
         class="nav-link"
@@ -31,5 +43,6 @@
         Sign Up
       </button>
     </nav>
+    }
   </div>
 </header>

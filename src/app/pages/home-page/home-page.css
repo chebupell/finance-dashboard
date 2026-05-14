@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: #eef1f7;
   color: #1d2538;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 * {
@@ -276,6 +276,37 @@ th {
   justify-content: flex-end;
   gap: 0.55rem;
   margin-top: 0.2rem;
+}
+
+.transaction-modal-actions button {
+  height: 38px;
+  padding: 0 1.4rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  color: #fff;
+  background: linear-gradient(180deg, #2f6bd1 0%, #2050a8 100%);
+}
+
+.transaction-modal-actions button:hover {
+  opacity: 0.88;
+}
+
+.transaction-modal-actions button:active {
+  opacity: 0.75;
+}
+
+.transaction-modal-actions .button-secondary {
+  background: #e8edf7;
+  color: #223150;
+}
+
+.transaction-modal-actions .button-secondary:hover {
+  background: #d8e2f0;
+  opacity: 1;
 }
 
 @media (max-width: 1080px) {

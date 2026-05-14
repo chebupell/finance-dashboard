@@ -1,9 +1,5 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
@@ -44,17 +40,23 @@ export class SignUpPage {
     }
 
     this.isSubmitting.set(true);
-    const formValue = this.signUpForm.getRawValue();
-
-    this.auth.loginUser(formValue);
-
-    // TODO: Call AuthService to register user
-    // this.authService.signUp(formValue).subscribe({
-    //   next: () => this.router.navigate(['/home']),
-    //   error: (err) => this.isSubmitting.set(false),
-    // });
+    const { fullName, email, password, confirmPassword, enableAutoLogin } =
+      this.signUpForm.getRawValue();
+    this.auth
+      .register({ name: fullName, email, password, confirmPassword, enableAutoLogin })
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.router.navigate(['/']);
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+          console.error(error);
+        },
+      });
 
     setTimeout(() => {
+      this.isSubmitting.set(false);
       this.router.navigate(['/']);
     }, 1000);
   }
