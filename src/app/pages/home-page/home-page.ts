@@ -6,7 +6,6 @@ import {
   OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../layout/sidebar/sidebar';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -44,8 +43,7 @@ const MONTHS = [
 
 @Component({
   selector: 'app-home-page',
-  standalone: true,
-  imports: [CommonModule, Sidebar, BaseChartDirective],
+  imports: [Sidebar, BaseChartDirective],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

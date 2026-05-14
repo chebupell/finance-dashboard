@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 interface FooterLink {
   label: string;
@@ -9,7 +8,7 @@ interface FooterLink {
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './footer.html',
   styleUrl: './footer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
