@@ -1,59 +1,247 @@
-# FinanceDashboard
+# Finance Dashboard
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.
+Личный финансовый дашборд для учёта доходов и расходов с визуализацией и JWT-аутентификацией.
 
-## Development server
+| Frontend | Backend | База данных |
+|----------|---------|-------------|
+| Angular 21 · Tailwind CSS 4 · Chart.js | Express 5 · Prisma 7 · JWT · Zod | PostgreSQL (Neon) |
 
-To start a local development server, run:
+**Локальные адреса:** [http://localhost:4200](http://localhost:4200) (UI) · [http://localhost:3000/api](http://localhost:3000/api) (API)
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Возможности
 
-## Code scaffolding
+- Регистрация и вход с JWT-сессией (`localStorage` / `sessionStorage`)
+- Дашборд с карточками: баланс, доходы, расходы, сбережения
+- Графики: динамика баланса по месяцам (line) и структура расходов по категориям (doughnut)
+- CRUD транзакций: просмотр, добавление, удаление
+- Защита маршрутов через `authGuard` и `guestGuard`
+- Валидация данных на клиенте (Reactive Forms) и сервере (Zod)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## Быстрый старт
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Требования
 
-```bash
-ng generate --help
-```
+- [Node.js](https://nodejs.org/) 20+
+- [npm](https://www.npmjs.com/) 11+
+- PostgreSQL-база (рекомендуется [Neon](https://neon.tech/))
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### 1. Клонирование и установка
 
 ```bash
-ng test
+# Frontend
+npm install
+
+# Backend
+cd server
+npm install
 ```
 
-## Running end-to-end tests
+### 2. Настройка окружения
 
-For end-to-end (e2e) testing, run:
+Создайте файл `server/.env`:
+
+```env
+DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
+DIRECT_URL="postgresql://user:password@host/db?sslmode=require"
+JWT_SECRET="your-secret-key"
+PORT=3000
+```
+
+> `DATABASE_URL` — для runtime (Prisma Neon adapter).  
+> `DIRECT_URL` — для миграций Prisma.
+
+### 3. Миграции базы данных
 
 ```bash
-ng e2e
+cd server
+npx prisma migrate dev
+npx prisma generate
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 4. Запуск
 
-## Additional Resources
+Откройте два терминала:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+# Терминал 1 — API
+cd server
+npm run dev
+```
+
+```bash
+# Терминал 2 — UI
+npm start
+```
+
+Откройте [http://localhost:4200](http://localhost:4200).
+
+---
+
+## Скрипты
+
+### Frontend (корень проекта)
+
+| Команда | Описание |
+|---------|----------|
+| `npm start` | Dev-сервер на порту 4200 |
+| `npm run build` | Production-сборка в `dist/` |
+| `npm run watch` | Сборка в dev-режиме с watch |
+| `npm test` | Unit-тесты (Vitest) |
+| `ng generate component <name>` | Генерация компонента |
+
+### Backend (`server/`)
+
+| Команда | Описание |
+|---------|----------|
+| `npm run dev` | Dev-сервер с hot reload (nodemon + ts-node) |
+| `npm run build` | `prisma generate` + компиляция TypeScript |
+| `npm start` | Сборка и запуск `dist/server.js` |
+
+### Prisma (`server/`)
+
+| Команда | Описание |
+|---------|----------|
+| `npx prisma generate` | Генерация Prisma Client |
+| `npx prisma migrate dev` | Создание и применение миграций (dev) |
+| `npx prisma migrate deploy` | Применение миграций (prod) |
+| `npx prisma studio` | Веб-интерфейс для просмотра БД |
+
+---
+
+## Структура проекта
+
+```
+finance-dashboard/
+├── src/                    # Angular-приложение
+│   ├── app/
+│   │   ├── pages/          # home, login, sign-up
+│   │   ├── layout/         # header, footer, sidebar
+│   │   ├── services/       # auth, transactions, guards
+│   │   └── interceptors/   # JWT interceptor
+│   └── environment/        # apiUrl
+│
+├── server/                 # Express API
+│   ├── src/
+│   │   ├── controllers/    # auth, transaction, user
+│   │   ├── routes/         # REST-маршруты
+│   │   ├── middleware/     # JWT, обработка ошибок
+│   │   └── validators/     # Zod-схемы
+│   └── prisma/             # schema + migrations
+│
+├── AGENTS.md               # Контекст для AI-агентов (Cursor)
+└── README.md
+```
+
+---
+
+## API
+
+Базовый URL: `http://localhost:3000/api`
+
+### Аутентификация
+
+| Метод | Endpoint | Auth | Описание |
+|-------|----------|------|----------|
+| `POST` | `/auth/register` | — | Регистрация |
+| `POST` | `/auth/login` | — | Вход |
+
+**Ответ:** `{ token: string, user: { id, name, email } }`
+
+### Транзакции
+
+| Метод | Endpoint | Auth | Описание |
+|-------|----------|------|----------|
+| `GET` | `/transactions` | JWT | Список транзакций пользователя |
+| `POST` | `/transactions` | JWT | Создание транзакции |
+| `DELETE` | `/transactions/:id` | JWT | Удаление транзакции |
+
+**Тело POST:**
+
+```json
+{
+  "amount": 1500,
+  "description": "Salary",
+  "category": "Labour",
+  "type": "income"
+}
+```
+
+`type`: `"income"` | `"expense"`
+
+### Пользователи
+
+| Метод | Endpoint | Auth | Описание |
+|-------|----------|------|----------|
+| `GET` | `/users` | JWT | Список пользователей |
+| `GET` | `/users/:id` | JWT | Пользователь по ID |
+| `DELETE` | `/users/:id` | JWT | Удаление пользователя |
+
+---
+
+## Маршруты приложения
+
+| Путь | Страница | Доступ |
+|------|----------|--------|
+| `/` | Дашборд | Только авторизованные |
+| `/login` | Вход | Только гости |
+| `/sign-up` | Регистрация | Только гости |
+| `/home` | → редирект на `/` | — |
+
+---
+
+## Стек технологий
+
+**Frontend**
+- [Angular 21](https://angular.dev/) — standalone-компоненты, signals, lazy routes
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Chart.js](https://www.chartjs.org/) + [ng2-charts](https://github.com/valor-software/ng2-charts)
+- [RxJS](https://rxjs.dev/)
+
+**Backend**
+- [Express 5](https://expressjs.com/)
+- [Prisma 7](https://www.prisma.io/) + [@prisma/adapter-neon](https://www.npmjs.com/package/@prisma/adapter-neon)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) — JWT
+- [bcryptjs](https://github.com/dcodeIO/bcrypt.js) — хеширование паролей
+- [Zod](https://zod.dev/) — валидация запросов
+
+---
+
+## Конфигурация
+
+| Файл | Назначение |
+|------|------------|
+| `src/environment/environment.ts` | URL API для frontend |
+| `server/.env` | Секреты и подключение к БД |
+| `server/src/app.ts` | CORS (origin: `http://localhost:4200`) |
+| `server/prisma/schema.prisma` | Модели `User` и `Transaction` |
+
+При деплое обновите `apiUrl` в `environment.ts` и `origin` в CORS-настройках backend.
+
+---
+
+## Тестирование
+
+```bash
+# Frontend (Vitest)
+npm test
+
+# Backend — тесты пока не настроены
+```
+
+---
+
+## Для AI-агентов
+
+Подробное описание архитектуры, соглашений и известных особенностей — в [AGENTS.md](./AGENTS.md).
+
+---
+
+## Полезные ссылки
+
+- [Angular CLI](https://angular.dev/tools/cli)
+- [Prisma Docs](https://www.prisma.io/docs)
+- [Neon Serverless Postgres](https://neon.tech/docs)
