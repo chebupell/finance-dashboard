@@ -45,18 +45,13 @@ export class SignUpPage {
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);
-          this.router.navigate(['/']);
+          void this.router.navigate(['/']);
         },
         error: (error: Error) => {
           this.isSubmitting.set(false);
           console.error(error);
         },
       });
-
-    setTimeout(() => {
-      this.isSubmitting.set(false);
-      this.router.navigate(['/']);
-    }, 1000);
   }
 
   onGoogleSignUp(): void {

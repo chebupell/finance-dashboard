@@ -33,18 +33,17 @@ export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // ✅ реактивный сигнал — инициализируем из storage при старте
   readonly loggedIn = signal<boolean>(
     !!(localStorage.getItem('token') || sessionStorage.getItem('token')),
   );
 
   isLoggedIn(): boolean {
-    return this.loggedIn(); // ✅ теперь возвращает сигнал
+    return this.loggedIn();
   }
 
   logout(): void {
     this.removeSession();
-    this.loggedIn.set(false); // ✅ хидер обновится мгновенно
+    this.loggedIn.set(false);
     this.router.navigate(['/login']);
   }
 
@@ -68,7 +67,7 @@ export class Auth {
     const storage = enableAutoLogin ? localStorage : sessionStorage;
     storage.setItem('token', res.token);
     storage.setItem('userData', JSON.stringify(res.user));
-    this.loggedIn.set(true); // ✅ хидер обновится мгновенно
+    this.loggedIn.set(true);
   }
 
   private removeSession(): void {

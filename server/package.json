@@ -5,9 +5,10 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
+    "prestart": "npm run build",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node server.ts"
+    "dev": "nodemon --watch server.ts --watch src --ext ts --exec ts-node server.ts"
   },
   "type": "commonjs",
   "dependencies": {

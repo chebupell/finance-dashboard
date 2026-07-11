@@ -15,8 +15,8 @@ interface FooterLink {
 })
 export class Footer {
   readonly companyName = input<string>('Chebupell');
+  readonly profileUrl = input<string>('https://github.com/chebupell');
   readonly year = input<number>(new Date().getFullYear());
-  readonly repository = input<string>('GitHub');
 
   readonly companyLinks = input<FooterLink[]>([
     { label: 'About', url: '#' },
@@ -33,6 +33,6 @@ export class Footer {
   readonly socialLinks = input<FooterLink[]>([
     { label: 'Twitter', url: 'https://twitter.com' },
     { label: 'LinkedIn', url: 'https://linkedin.com' },
-    { label: 'GitHub', url: 'https://github.com' },
+    { label: 'GitHub', url: 'https://github.com/chebupell/finance-dashboard' },
   ]);
 }

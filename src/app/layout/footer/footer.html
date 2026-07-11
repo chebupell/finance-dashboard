@@ -54,7 +54,16 @@
     <!-- Bottom Section -->
     <div class="footer-bottom">
       <p class="footer-copy">
-        © {{ year() }} {{ companyName() }} | {{ repository() }}
+        © {{ year() }}
+        <a
+          [href]="profileUrl()"
+          class="footer-copy-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ companyName() }}
+        </a>
+        | GitHub
       </p>
     </div>
   </div>

@@ -7,6 +7,17 @@ import cors from 'cors';
 
 const app = express();
 
+app.use((req, res, next) => {
+  const startedAt = Date.now();
+
+  res.on('finish', () => {
+    const durationMs = Date.now() - startedAt;
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms`);
+  });
+
+  next();
+});
+
 app.use(
   cors({
     origin: 'http://localhost:4200',

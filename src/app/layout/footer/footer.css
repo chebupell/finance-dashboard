@@ -88,6 +88,23 @@
   color: var(--text-secondary);
 }
 
+.footer-copy-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-copy-link:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.footer-copy-link:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .footer-container {

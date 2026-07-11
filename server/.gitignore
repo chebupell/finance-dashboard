@@ -44,5 +44,3 @@ __screenshots__/
 Thumbs.db
 
 .env
-
-/src/generated/prisma
