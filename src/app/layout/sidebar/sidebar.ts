@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [],
-  template: ` <p>sidebar works!</p> `,
-  styles: ``,
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './sidebar.html',
+  styleUrl: './sidebar.css',
 })
-export class Sidebar {}
+export class Sidebar {
+  readonly auth = inject(Auth);
+  readonly userData = this.auth.getUserData();
+}
