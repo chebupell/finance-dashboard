@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'https://ВАШ-BACKEND.onrender.com/api',
+  apiUrl: 'https://finance-dashboard-api-qqwg.onrender.com/api',
 };
