@@ -1,0 +1,168 @@
+<section class="settings-view" aria-label="Settings">
+  <header class="settings-header">
+    <div>
+      <h2>{{ t('settings.title') }}</h2>
+      <p>{{ t('settings.subtitle') }}</p>
+    </div>
+  </header>
+
+  @if (successMessage()) {
+    <p class="settings-alert settings-alert--success" role="status">{{ successMessage() }}</p>
+  }
+  @if (errorMessage()) {
+    <p class="settings-alert settings-alert--error" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <div class="settings-grid">
+    <article class="settings-card">
+      <h3>{{ t('settings.profile') }}</h3>
+
+      <div class="avatar-block">
+        <img [src]="avatarPreview()" [alt]="t('settings.avatar')" class="avatar-image" />
+        <div class="avatar-actions">
+          <label class="avatar-upload">
+            <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onAvatarSelected($event)" />
+            {{ t('settings.changeAvatar') }}
+          </label>
+          <button type="button" class="link-button" (click)="removeAvatar()">
+            {{ t('settings.removeAvatar') }}
+          </button>
+          <p class="avatar-hint">{{ t('settings.avatarHint') }}</p>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="settings-form">
+        <label>
+          {{ t('settings.name') }}
+          <input
+            type="text"
+            formControlName="name"
+            [placeholder]="t('settings.namePlaceholder')"
+            [attr.aria-invalid]="profileForm.controls.name.invalid && profileForm.controls.name.touched"
+          />
+        </label>
+        @if (profileForm.controls.name.touched && profileForm.controls.name.hasError('required')) {
+          <span class="field-error">{{ t('settings.nameRequired') }}</span>
+        }
+
+        <button type="submit" [disabled]="profileForm.invalid || isSavingProfile()">
+          {{ isSavingProfile() ? t('settings.saving') : t('settings.save') }}
+        </button>
+      </form>
+    </article>
+
+    <article class="settings-card">
+      <h3>{{ t('settings.account') }}</h3>
+
+      <form [formGroup]="emailForm" (ngSubmit)="saveEmail()" class="settings-form">
+        <label>
+          {{ t('settings.email') }}
+          <input
+            type="email"
+            formControlName="email"
+            [placeholder]="t('settings.emailPlaceholder')"
+            autocomplete="email"
+            [attr.aria-invalid]="emailForm.controls.email.invalid && emailForm.controls.email.touched"
+          />
+        </label>
+        @if (emailForm.controls.email.touched && emailForm.controls.email.hasError('required')) {
+          <span class="field-error">{{ t('settings.emailRequired') }}</span>
+        } @else if (emailForm.controls.email.touched && emailForm.controls.email.hasError('email')) {
+          <span class="field-error">{{ t('settings.emailInvalid') }}</span>
+        }
+
+        <button type="submit" [disabled]="emailForm.invalid || isSavingEmail()">
+          {{ isSavingEmail() ? t('settings.saving') : t('settings.save') }}
+        </button>
+      </form>
+
+      <div class="settings-divider"></div>
+
+      <h4>{{ t('settings.password') }}</h4>
+      <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="settings-form">
+        <label>
+          {{ t('settings.currentPassword') }}
+          <input type="password" formControlName="currentPassword" autocomplete="current-password" />
+        </label>
+        @if (
+          passwordForm.controls.currentPassword.touched &&
+          passwordForm.controls.currentPassword.hasError('required')
+        ) {
+          <span class="field-error">{{ t('settings.passwordRequired') }}</span>
+        }
+
+        <label>
+          {{ t('settings.newPassword') }}
+          <input type="password" formControlName="newPassword" autocomplete="new-password" />
+        </label>
+        @if (
+          passwordForm.controls.newPassword.touched &&
+          passwordForm.controls.newPassword.hasError('minlength')
+        ) {
+          <span class="field-error">{{ t('settings.passwordMin') }}</span>
+        }
+
+        <label>
+          {{ t('settings.confirmPassword') }}
+          <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
+        </label>
+
+        <button type="submit" [disabled]="passwordForm.invalid || isSavingPassword()">
+          {{ isSavingPassword() ? t('settings.saving') : t('settings.save') }}
+        </button>
+      </form>
+    </article>
+
+    <article class="settings-card settings-card--wide">
+      <h3>{{ t('settings.preferences') }}</h3>
+
+      <div class="preference-row">
+        <div>
+          <p class="preference-label">{{ t('settings.theme') }}</p>
+        </div>
+        <div class="toggle-group" role="group" [attr.aria-label]="t('settings.theme')">
+          <button
+            type="button"
+            class="toggle-option"
+            [class.toggle-option--active]="theme.mode() === 'light'"
+            (click)="setTheme('light')"
+          >
+            {{ t('settings.themeLight') }}
+          </button>
+          <button
+            type="button"
+            class="toggle-option"
+            [class.toggle-option--active]="theme.mode() === 'dark'"
+            (click)="setTheme('dark')"
+          >
+            {{ t('settings.themeDark') }}
+          </button>
+        </div>
+      </div>
+
+      <div class="preference-row">
+        <div>
+          <p class="preference-label">{{ t('settings.language') }}</p>
+        </div>
+        <div class="toggle-group" role="group" [attr.aria-label]="t('settings.language')">
+          <button
+            type="button"
+            class="toggle-option"
+            [class.toggle-option--active]="locale.current() === 'en'"
+            (click)="setLanguage('en')"
+          >
+            {{ t('settings.languageEn') }}
+          </button>
+          <button
+            type="button"
+            class="toggle-option"
+            [class.toggle-option--active]="locale.current() === 'ru'"
+            (click)="setLanguage('ru')"
+          >
+            {{ t('settings.languageRu') }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

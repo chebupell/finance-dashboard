@@ -19,6 +19,10 @@ export class LoginPage {
     'Track your income and expenses',
     'Set and achieve financial goals',
     'View detailed reports & analytics',
+    'Monitor your balance in real time',
+    'Visualize spending by category',
+    'Add and manage transactions effortlessly',
+    'Track monthly savings progress',
   ];
 
   readonly loginForm = this.fb.nonNullable.group({

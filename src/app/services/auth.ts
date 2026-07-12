@@ -32,10 +32,15 @@ export interface AuthResponse {
 export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly avatarStorageKey = 'finance-dashboard-avatar';
+  private readonly defaultAvatar = '/images/user.png';
 
   readonly loggedIn = signal<boolean>(
     !!(localStorage.getItem('token') || sessionStorage.getItem('token')),
   );
+
+  readonly userData = signal<UserData | null>(this.readUserDataFromStorage());
+  readonly avatarUrl = signal<string>(this.readAvatarFromStorage());
 
   isLoggedIn(): boolean {
     return this.loggedIn();
@@ -44,6 +49,8 @@ export class Auth {
   logout(): void {
     this.removeSession();
     this.loggedIn.set(false);
+    this.userData.set(null);
+    this.avatarUrl.set(this.defaultAvatar);
     this.router.navigate(['/login']);
   }
 
@@ -60,7 +67,24 @@ export class Auth {
   }
 
   getUserData(): UserData | null {
-    return JSON.parse(localStorage.getItem('userData') || '{}') as UserData;
+    return this.userData();
+  }
+
+  updateLocalUserData(user: UserData): void {
+    const storage = this.getActiveStorage();
+    if (!storage) return;
+    storage.setItem('userData', JSON.stringify(user));
+    this.userData.set(user);
+  }
+
+  setAvatar(dataUrl: string): void {
+    localStorage.setItem(this.avatarStorageKey, dataUrl);
+    this.avatarUrl.set(dataUrl);
+  }
+
+  removeAvatar(): void {
+    localStorage.removeItem(this.avatarStorageKey);
+    this.avatarUrl.set(this.defaultAvatar);
   }
 
   private saveSession(res: AuthResponse, enableAutoLogin = false): void {
@@ -68,6 +92,7 @@ export class Auth {
     storage.setItem('token', res.token);
     storage.setItem('userData', JSON.stringify(res.user));
     this.loggedIn.set(true);
+    this.userData.set(res.user);
   }
 
   private removeSession(): void {
@@ -75,5 +100,27 @@ export class Auth {
     localStorage.removeItem('userData');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('userData');
+  }
+
+  private getActiveStorage(): Storage | null {
+    if (localStorage.getItem('token')) return localStorage;
+    if (sessionStorage.getItem('token')) return sessionStorage;
+    return null;
+  }
+
+  private readUserDataFromStorage(): UserData | null {
+    const raw =
+      localStorage.getItem('userData') || sessionStorage.getItem('userData') || '';
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as UserData;
+      return parsed.name ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private readAvatarFromStorage(): string {
+    return localStorage.getItem(this.avatarStorageKey) || this.defaultAvatar;
   }
 }

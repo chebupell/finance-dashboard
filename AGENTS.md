@@ -5,7 +5,7 @@
 ## Обзор
 
 | Часть | Стек | Порт по умолчанию |
-|-------|------|-------------------|
+| ------- | ------ | ------------------- |
 | Frontend | Angular 21, Tailwind CSS 4, Chart.js / ng2-charts | `4200` |
 | Backend | Express 5, Prisma 7, JWT, Zod, bcryptjs | `3000` |
 | БД | PostgreSQL через Neon (`@prisma/adapter-neon`) | — |
@@ -14,7 +14,7 @@ Frontend обращается к API по адресу `http://localhost:3000/ap
 
 ## Структура проекта
 
-```
+```text
 finance-dashboard/
 ├── src/                          # Angular-приложение
 │   ├── main.ts                   # Точка входа
@@ -66,26 +66,31 @@ finance-dashboard/
 ### Frontend
 
 **Маршрутизация** (`app.routes.ts`):
+
 - `/` — HomePage, защищён `authGuard` (редирект на `/sign-up` если не авторизован)
 - `/login`, `/sign-up` — защищены `guestGuard` (редирект на `/` если авторизован)
 - `/home` — редирект на `/`
 
 **Auth** (`services/auth.ts`):
+
 - JWT хранится в `localStorage` (если `enableAutoLogin`) или `sessionStorage`
 - `loggedIn` — signal, обновляется при login/register/logout
 - Методы: `register()`, `login()`, `logout()`, `getUserData()`, `isLoggedIn()`
 
 **Транзакции** (`services/transaction.ts`):
+
 - `getAll()`, `create()`, `delete(id)` — запросы с Bearer-токеном
 - Тип: `income` | `expense`
 
 **HomePage** (`pages/home-page/home-page.ts`):
+
 - Загрузка транзакций, summary-карточки (balance, income, expenses, savings)
 - Line chart — баланс по месяцам (Chart.js)
 - Doughnut chart — расходы по категориям
 - Форма добавления транзакции (amount, description, category, type)
 
 **UI-паттерны**:
+
 - Standalone-компоненты, lazy loading через `loadComponent`
 - Signals + `computed` + `OnPush` change detection
 - Reactive Forms на login/sign-up
@@ -94,26 +99,31 @@ finance-dashboard/
 ### Backend
 
 **API-маршруты** (`server/src/app.ts`):
+
 | Prefix | Файл | Описание |
-|--------|------|----------|
+| -------- | ------ | ---------- |
 | `/api/auth` | `authRoutes.ts` | POST `/register`, POST `/login` |
 | `/api/transactions` | `transactionRoutes.ts` | GET `/`, POST `/`, DELETE `/:id` (требуют JWT) |
 | `/api/users` | `userRoutes.ts` | GET `/`, GET `/:id`, DELETE `/:id` (требуют JWT) |
 
 **Аутентификация**:
+
 - JWT payload: `{ userId: number }`, срок 7 дней
 - `auth.middleware.ts` — извлекает `userId` в `req.userId`
 - Пароли хешируются bcrypt (10 rounds)
 
 **Валидация** (Zod):
+
 - `auth.validator.ts` — register (name, email, password, confirmPassword, enableAutoLogin), login
 - `transaction.validator.ts` — amount > 0, type: `income` | `expense`
 
 **База данных** (`prisma/schema.prisma`):
+
 - `User`: id, name, email (unique), password, enableAutoLogin
 - `Transaction`: id, amount, description, category, type, date, userId → User
 
 **Ошибки** (`error.middleware.ts`):
+
 - `AppError` — контролируемые ошибки с statusCode
 - Prisma-ошибки → 400
 - Dev-режим возвращает `details` в 500-ответах
@@ -153,11 +163,13 @@ npx prisma studio                # GUI для БД
 ### Запуск полного стека
 
 Терминал 1 (backend):
+
 ```bash
 cd server && npm run dev
 ```
 
 Терминал 2 (frontend):
+
 ```bash
 npm start
 ```
@@ -167,7 +179,7 @@ npm start
 Файл `server/.env` (не коммитится):
 
 | Переменная | Назначение |
-|------------|------------|
+| ------------ | ------------ |
 | `DATABASE_URL` | Connection string для Prisma Neon adapter (runtime) |
 | `DIRECT_URL` | Прямое подключение для миграций (`prisma.config.ts`) |
 | `JWT_SECRET` | Секрет для подписи JWT |
@@ -190,3 +202,15 @@ npm start
 - OAuth-кнопки (Google, Apple, Facebook) — заглушки (`console.log`).
 - `userController.getAll` имеет несоответствие сигнатуры `(res)` вместо `(req, res)` — может вызывать ошибки.
 - Категории расходов захардкожены в `home-page.ts`: Labour, Legal, Production, License, Facilities, Taxes, Insurance.
+
+## Написание кода
+
+Before adding code:
+
+1. Skip anything not required by the task.
+2. Reuse existing project code before creating new code.
+3. Prefer the standard library, platform APIs, and existing dependencies.
+4. Make the smallest clear change that works.
+5. Do not add abstractions, dependencies, refactors, or features unless required.
+6. Inspect and edit only relevant files.
+7. Stop after the requested result is verified.

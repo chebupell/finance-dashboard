@@ -1,6 +1,8 @@
 import { Component, ChangeDetectionStrategy, input, output, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
+import { Locale } from '../../services/locale';
+import { Theme } from '../../services/theme';
 
 @Component({
   selector: 'app-header',
@@ -13,12 +15,22 @@ import { Auth } from '../../services/auth';
 export class Header {
   private readonly router = inject(Router);
   private readonly auth = inject(Auth);
+  readonly locale = inject(Locale);
+  readonly theme = inject(Theme);
 
-  readonly title = input<string>('Personal Finance Dashboard');
+  readonly title = input<string>('');
   readonly onLoginClick = output<void>();
   readonly onSignUpClick = output<void>();
 
   readonly isLoggedIn = computed(() => this.auth.isLoggedIn());
+
+  t(key: Parameters<Locale['t']>[0]): string {
+    return this.locale.t(key);
+  }
+
+  displayTitle(): string {
+    return this.title() || this.locale.t('app.title');
+  }
 
   onLogin(): void {
     this.onLoginClick.emit();
@@ -32,5 +44,16 @@ export class Header {
 
   onLogout(): void {
     this.auth.logout();
+  }
+
+  toggleTheme(event: Event): void {
+    event.stopPropagation();
+    this.theme.toggle();
+  }
+
+  themeToggleLabel(): string {
+    return this.theme.mode() === 'light'
+      ? this.locale.t('header.themeToDark')
+      : this.locale.t('header.themeToLight');
   }
 }

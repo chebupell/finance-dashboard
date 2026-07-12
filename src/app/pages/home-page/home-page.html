@@ -1,15 +1,119 @@
 <section class="dashboard-shell">
-  <app-sidebar></app-sidebar>
-
-  <div class="dashboard-content">
+  <div
+    class="dashboard-content"
+    [class.dashboard-content--searching]="isFullTransactionsView()"
+  >
     <header class="dashboard-header">
-      <h1>Personal Finance Dashboard</h1>
+      <h1>{{ t('app.title') }}</h1>
       <div class="header-actions">
-        <input type="search" placeholder="Search..." aria-label="Search" />
-        <button type="button" (click)="openAddTransactionMenu()">Add Transaction</button>
+        @if (!isGoalsView() && !isSettingsView()) {
+        <input
+          type="search"
+          [placeholder]="t('dashboard.search')"
+          [attr.aria-label]="t('dashboard.search')"
+          [value]="searchQuery()"
+          (input)="onSearchInput($event)"
+        />
+        <button type="button" (click)="openAddTransactionMenu()">{{ t('dashboard.addTransaction') }}</button>
+        } @else if (isGoalsView()) {
+        <button type="button" (click)="openAddGoalMenu()">{{ t('dashboard.addGoal') }}</button>
+        }
       </div>
     </header>
 
+    @if (isSettingsView()) {
+    <app-settings-view />
+    } @else if (isGoalsView()) {
+    <section class="summary-grid" aria-label="Goals summary">
+      @for (card of goalSummaryCards(); track card.title) {
+      <article class="summary-card">
+        <div class="summary-top">
+          <span>{{ card.title }}</span>
+          @if (card.trend !== 'flat') {
+          <span class="trend" [class.trend--down]="card.trend === 'down'">
+            {{ card.trend === 'up' ? '▲' : '▼' }}
+          </span>
+          }
+        </div>
+        <p>{{ card.amount }}</p>
+      </article>
+      }
+    </section>
+
+    <section class="table-card goals-section" aria-label="Financial goals">
+      <div class="table-header">
+        <h2>Financial Goals</h2>
+      </div>
+
+      <div class="goals-grid">
+        @if (goals().length === 0) {
+        <article class="goals-empty">
+          <h2>No goals yet</h2>
+          <p>Create your first financial goal to start tracking progress.</p>
+          <button type="button" (click)="openAddGoalMenu()">Add Goal</button>
+        </article>
+        } @else {
+        @for (goal of goals(); track goal.id) {
+        <article class="goal-card" [class.goal-card--complete]="isGoalComplete(goal)">
+          <div class="goal-card__header">
+            <div>
+              <p class="goal-card__category">{{ goal.category }}</p>
+              <h2>{{ goal.name }}</h2>
+            </div>
+            <span class="goal-status" [class.goal-status--complete]="isGoalComplete(goal)">
+              {{ isGoalComplete(goal) ? 'Completed' : 'In Progress' }}
+            </span>
+          </div>
+
+          <div class="goal-progress">
+            <div class="goal-progress__labels">
+              <span>{{ formatAmount(goal.currentAmount) }} saved</span>
+              <span>{{ formatAmount(goal.targetAmount) }} target</span>
+            </div>
+            <div class="goal-progress__track" role="progressbar" [attr.aria-valuenow]="goalProgress(goal)" aria-valuemin="0" aria-valuemax="100">
+              <div class="goal-progress__fill" [style.width.%]="goalProgress(goal)"></div>
+            </div>
+            <p class="goal-progress__meta">
+              {{ goalProgress(goal) }}% complete · {{ formatAmount(goalRemaining(goal)) }} remaining
+            </p>
+          </div>
+
+          <div class="goal-card__footer">
+            <span>Deadline: {{ formatDate(goal.deadline) }}</span>
+            <div class="goal-card__actions">
+              <button
+                type="button"
+                class="goal-action goal-action--add"
+                [disabled]="isGoalComplete(goal)"
+                (click)="openGoalFundsMenu(goal, 'deposit')"
+              >
+                + Add
+              </button>
+              <button
+                type="button"
+                class="goal-action goal-action--withdraw"
+                [disabled]="goal.currentAmount <= 0"
+                (click)="openGoalFundsMenu(goal, 'withdraw')"
+              >
+                − Withdraw
+              </button>
+              <button
+                type="button"
+                class="goal-delete"
+                [disabled]="deletingGoalId() === goal.id"
+                (click)="deleteGoal(goal.id)"
+              >
+                {{ deletingGoalId() === goal.id ? 'Removing…' : 'Remove' }}
+              </button>
+            </div>
+          </div>
+        </article>
+        }
+        }
+      </div>
+    </section>
+    } @else {
+    @if (!isFullTransactionsView()) {
     <section class="summary-grid" aria-label="Summary cards">
       @for (card of summaryCards(); track card.title) {
       <article class="summary-card">
@@ -33,7 +137,7 @@
           <canvas
             baseChart
             [data]="balanceOverviewData()"
-            [options]="balanceOverviewOptions"
+            [options]="balanceOverviewOptions()"
             [type]="balanceOverviewType"
           >
           </canvas>
@@ -45,57 +149,105 @@
           <canvas
             baseChart
             [data]="pieChartData()"
-            [options]="pieChartOptions"
+            [options]="pieChartOptions()"
             [type]="pieChartType"
           >
           </canvas>
         </div>
       </article>
     </section>
+    }
 
     <section class="table-card" aria-label="Recent transactions">
       <div class="table-header">
-        <h2>Recent Transactions</h2>
+        <h2>
+          @if (isSearching()) {
+          {{ t('dashboard.searchResults') }}
+          } @else if (activeNav() === 'transactions') {
+          {{ t('dashboard.transactions') }}
+          } @else {
+          {{ t('dashboard.recentTransactions') }}
+          }
+        </h2>
+        @if (isSearching()) {
+        <p class="table-header-meta">
+          {{ filteredTransactions().length }} match{{ filteredTransactions().length === 1 ? '' : 'es' }}
+        </p>
+        }
       </div>
 
-      <div class="table-wrapper" [class.table-wrapper--expanded]="isExpanded()">
+      <div
+        class="table-wrapper"
+        [class.table-wrapper--expanded]="isExpanded() || isFullTransactionsView()"
+      >
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Status</th>
+              <th>{{ t('table.date') }}</th>
+              <th>{{ t('table.category') }}</th>
+              <th>{{ t('table.description') }}</th>
+              <th>{{ t('table.amount') }}</th>
+              <th>{{ t('table.status') }}</th>
+              <th aria-label="Actions"></th>
             </tr>
           </thead>
           <tbody>
-            @for (item of visibleTransactions(); track item.id) {
+            @if (visibleTransactions().length === 0) {
             <tr>
-              <td>{{ formatDate(item.date) }}</td>
-              <td>{{ item.category ?? '—' }}</td>
-              <td>{{ item.description }}</td>
-              <td [class.amount--expense]="item.type === 'expense'">
-                {{ formatAmount(item.amount) }}
-              </td>
-              <td>
-                <span class="status" [class.status--expense]="item.type === 'expense'">
-                  {{ item.type === 'income' ? 'Income' : 'Expense' }}
-                </span>
+              <td colspan="6" class="table-empty">
+                @if (isSearching()) {
+                {{ t('table.emptySearch') }}
+                } @else {
+                {{ t('table.empty') }}
+                }
               </td>
             </tr>
+            } @else {
+            @for (item of visibleTransactions(); track item.id) {
+            <tr>
+              <td [attr.data-label]="t('table.date')">{{ formatDate(item.date) }}</td>
+              <td [attr.data-label]="t('table.category')">{{ item.category ?? '—' }}</td>
+              <td [attr.data-label]="t('table.description')">{{ item.description }}</td>
+              <td
+                [attr.data-label]="t('table.amount')"
+                [class.amount--expense]="item.type === 'expense'"
+              >
+                {{ formatAmount(item.amount) }}
+              </td>
+              <td [attr.data-label]="t('table.status')">
+                <span class="status" [class.status--expense]="item.type === 'expense'">
+                  {{ item.type === 'income' ? t('status.income') : t('status.expense') }}
+                </span>
+              </td>
+              <td [attr.data-label]="t('table.actions')">
+                <button
+                  type="button"
+                  class="transaction-delete"
+                  [disabled]="deletingTransactionId() === item.id"
+                  (click)="deleteTransaction(item.id!)"
+                >
+                  {{ deletingTransactionId() === item.id ? t('table.removing') : t('table.remove') }}
+                </button>
+              </td>
+            </tr>
+            }
             }
           </tbody>
         </table>
       </div>
 
+      @if (hasMoreTransactions()) {
       <div class="view-all-row">
         <button #toggleButton type="button" (click)="onViewAll(toggleButton)">
-          {{ isExpanded() ? 'Show Less' : 'View All' }}
+          {{ isExpanded() ? t('showLess') : t('viewAll') }}
         </button>
       </div>
+      }
     </section>
+    }
   </div>
+
+  <app-sidebar [activeNav]="activeNav()" (navChange)="onNavChange($event)"></app-sidebar>
 </section>
 
 @if (isAddTransactionMenuOpen()) {
@@ -103,10 +255,6 @@
   <section class="transaction-modal" (click)="$event.stopPropagation()">
     <h2>Add Transaction</h2>
     <form #transactionForm (submit)="addTransaction(transactionForm); $event.preventDefault()">
-      <label>
-        Date
-        <input type="date" name="date" required />
-      </label>
       <label>
         Category
         <select name="category" required>
@@ -140,6 +288,81 @@
           Cancel
         </button>
         <button type="submit">Save</button>
+      </div>
+    </form>
+  </section>
+</div>
+}
+
+@if (isAddGoalMenuOpen()) {
+<div class="transaction-modal-backdrop" (click)="closeAddGoalMenu()">
+  <section class="transaction-modal" (click)="$event.stopPropagation()">
+    <h2>Add Goal</h2>
+    <form #goalForm (submit)="addGoal(goalForm); $event.preventDefault()">
+      <label>
+        Goal Name
+        <input type="text" name="name" placeholder="e.g. Emergency Fund" required />
+      </label>
+      <label>
+        Category
+        <select name="category" required>
+          @for (category of goalCategories; track category) {
+          <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Target Amount
+        <input type="number" name="targetAmount" min="1" step="1" placeholder="0" required />
+      </label>
+      <label>
+        Current Savings
+        <input type="number" name="currentAmount" min="0" step="1" placeholder="0" value="0" />
+      </label>
+      <label>
+        Deadline
+        <input type="date" name="deadline" required />
+      </label>
+      <div class="transaction-modal-actions">
+        <button type="button" class="button-secondary" (click)="closeAddGoalMenu()">Cancel</button>
+        <button type="submit" [disabled]="isAddGoalSubmitting()">
+          {{ isAddGoalSubmitting() ? 'Saving…' : 'Save Goal' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+}
+
+@if (isGoalFundsMenuOpen() && selectedGoalForFunds(); as goal) {
+<div class="transaction-modal-backdrop" (click)="closeGoalFundsMenu()">
+  <section class="transaction-modal" (click)="$event.stopPropagation()">
+    <h2>{{ goalFundsModalTitle() }}</h2>
+    <p class="goal-funds-hint">
+      @if (goalFundsMode() === 'deposit') {
+      Available to add: {{ formatAmount(maxGoalFundsAmount()) }}
+      } @else {
+      Available to withdraw: {{ formatAmount(maxGoalFundsAmount()) }}
+      }
+    </p>
+    <form #goalFundsForm (submit)="adjustGoalFunds(goalFundsForm); $event.preventDefault()">
+      <label>
+        Amount
+        <input
+          type="number"
+          name="amount"
+          min="1"
+          [max]="maxGoalFundsAmount()"
+          step="1"
+          placeholder="0"
+          required
+        />
+      </label>
+      <div class="transaction-modal-actions">
+        <button type="button" class="button-secondary" (click)="closeGoalFundsMenu()">Cancel</button>
+        <button type="submit" [disabled]="isGoalFundsSubmitting() || maxGoalFundsAmount() <= 0">
+          {{ isGoalFundsSubmitting() ? 'Saving…' : goalFundsMode() === 'deposit' ? 'Add Funds' : 'Withdraw' }}
+        </button>
       </div>
     </form>
   </section>

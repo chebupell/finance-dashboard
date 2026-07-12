@@ -9,30 +9,53 @@
         width="64"
         height="64"
       />
-      <span class="logo-text">{{ title() }}</span>
+      <span class="logo-text">{{ displayTitle() }}</span>
     </div>
 
     <!-- Navigation Links -->
-    @if (isLoggedIn()) {
-    <nav class="header-nav" aria-label="Main navigation">
+    <nav class="header-nav" [attr.aria-label]="isLoggedIn() ? 'Main navigation' : 'Guest navigation'">
+      <button
+        type="button"
+        class="theme-toggle"
+        [class.theme-toggle--dark]="theme.mode() === 'dark'"
+        (click)="toggleTheme($event)"
+        [attr.aria-label]="themeToggleLabel()"
+        [attr.aria-pressed]="theme.mode() === 'dark'"
+      >
+        @if (theme.mode() === 'light') {
+        <svg class="theme-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 3a1 1 0 0 1 1 1v1.06a1 1 0 1 1-2 0V4a1 1 0 0 1 1-1Zm0 15.94a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.06a1 1 0 0 1 1-1ZM4.22 5.64a1 1 0 0 1 1.42 0l.75.75a1 1 0 0 1-1.42 1.42l-.75-.75a1 1 0 0 1 0-1.42Zm13.61 13.61a1 1 0 0 1 1.42 0l.75.75a1 1 0 0 1-1.42 1.42l-.75-.75a1 1 0 0 1 0-1.42ZM3 12a1 1 0 0 1 1-1h1.06a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Zm15.94 0a1 1 0 0 1 1-1H21a1 1 0 1 1 0 2h-1.06a1 1 0 0 1-1-1ZM5.64 19.78a1 1 0 0 1 0-1.42l.75-.75a1 1 0 0 1 1.42 1.42l-.75.75a1 1 0 0 1-1.42 0ZM18.36 6.64a1 1 0 0 1 0-1.42l.75-.75a1 1 0 1 1 1.42 1.42l-.75.75a1 1 0 0 1-1.42 0ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"
+          />
+        </svg>
+        } @else {
+        <svg class="theme-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M21.64 13a9 9 0 1 1-10.63-10.61 1 1 0 0 1-.61.92 7 7 0 1 0 8.53 8.55 1 1 0 0 1-.92.61z"
+          />
+        </svg>
+        }
+      </button>
+
+      @if (isLoggedIn()) {
       <button
         type="button"
         class="nav-link nav-link--primary"
         (click)="onLogout()"
         aria-label="Log out"
       >
-        Log Out
+        {{ t('header.logout') }}
       </button>
-    </nav>
-    } @else {
-    <nav class="header-nav" aria-label="Guest navigation">
+      } @else {
       <button
         type="button"
         class="nav-link"
         (click)="onLogin()"
         aria-label="Navigate to login page"
       >
-        Log In
+        {{ t('header.login') }}
       </button>
       <button
         type="button"
@@ -40,9 +63,9 @@
         (click)="onSignUp()"
         aria-label="Navigate to sign up page"
       >
-        Sign Up
+        {{ t('header.signup') }}
       </button>
+      }
     </nav>
-    }
   </div>
 </header>

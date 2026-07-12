@@ -1,16 +1,16 @@
-<aside class="sidebar -ml-px">
+<aside class="sidebar">
   <nav class="sidebar-nav" aria-label="Dashboard navigation">
-    <a class="nav-item nav-item--active" href="#">Dashboard</a>
-    <a class="nav-item" href="#">Transactions</a>
-    <a class="nav-item" href="#">Goals</a>
-    <a class="nav-item" href="#">Settings</a>
+    <a class="nav-item" [class.nav-item--active]="activeNav() === 'dashboard'" href="#" (click)="onNavClick($event, 'dashboard')">{{ t('nav.dashboard') }}</a>
+    <a class="nav-item" [class.nav-item--active]="activeNav() === 'transactions'" href="#" (click)="onNavClick($event, 'transactions')">{{ t('nav.transactions') }}</a>
+    <a class="nav-item" [class.nav-item--active]="activeNav() === 'goals'" href="#" (click)="onNavClick($event, 'goals')">{{ t('nav.goals') }}</a>
+    <a class="nav-item" [class.nav-item--active]="activeNav() === 'settings'" href="#" (click)="onNavClick($event, 'settings')">{{ t('nav.settings') }}</a>
   </nav>
 
   <div class="sidebar-user">
-    <img src="/images/user.png" alt="your avatar" />
+    <img [src]="auth.avatarUrl()" [alt]="t('settings.avatar')" />
     <div>
-      <p class="name">{{ userData?.name }}</p>
-      <p class="mail">{{ userData?.email }}</p>
+      <p class="name">{{ auth.userData()?.name }}</p>
+      <p class="mail">{{ auth.userData()?.email }}</p>
     </div>
   </div>
 </aside>

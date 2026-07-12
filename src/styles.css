@@ -1,9 +1,141 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --app-bg: #f3f4f6;
+  --app-surface: #ffffff;
+  --app-text: #1f2937;
+  --app-text-muted: #6b7280;
+  --app-border: #e5e7eb;
+  --dash-bg: #eef1f7;
+  --dash-shell-bg: #f8faff;
+  --dash-border: #d8dfec;
+  --dash-card-bg: #ffffff;
+  --dash-input-bg: #ffffff;
+  --dash-text-primary: #212b43;
+  --dash-text-secondary: #5f6d8a;
+  --dash-text-muted: #425174;
+  --dash-surface-muted: #e8edf7;
+  --dash-row-border: #e5eaf5;
+  --dash-progress-track: #e8edf7;
+  --dash-btn-secondary-bg: #e8edf7;
+  --dash-btn-secondary-text: #223150;
+  --dash-btn-secondary-hover: #d8e2f0;
+  --dash-goal-action-bg: #f9fbff;
+  --dash-goal-action-text: #223150;
+  --dash-goal-complete-border: #b8dfc4;
+  --dash-goal-complete-bg: linear-gradient(180deg, #ffffff 0%, #f4fbf6 100%);
+  --dash-shadow: 0 2px 8px rgba(26, 40, 73, 0.05);
+  --dash-shell-shadow: 0 8px 24px rgba(26, 40, 73, 0.08);
+  --modal-backdrop: rgba(11, 20, 40, 0.45);
+  --alert-success-bg: #e8f7ed;
+  --alert-success-text: #1f7a3f;
+  --alert-success-border: #b8dfc4;
+  --alert-error-bg: #fdecec;
+  --alert-error-text: #b42318;
+  --alert-error-border: #f2c6c6;
+  --avatar-bg: #f3f6fc;
+  --chart-grid: #d8dfec;
+  --chart-text: #5f6d8a;
+  --chart-line: #2f6bd1;
+  --chart-line-fill: rgba(47, 107, 209, 0.15);
+  --auth-panel-bg: #f8fafc;
+  --auth-feature-bg: #ffffff;
+  --auth-feature-border: #e5e7eb;
+  --auth-feature-row-border: #f3f4f6;
+  --auth-input-bg: #ffffff;
+  --auth-input-border: #e5e7eb;
+  --auth-input-text: #111827;
+  --auth-placeholder: #9ca3af;
+  --auth-card-shadow: 0 20px 40px rgb(15 23 42 / 8%);
+  --header-bg: #ffffff;
+  --header-text: #1f2937;
+  --header-border: #e5e7eb;
+  --header-theme-toggle-bg: #f3f4f6;
+  --header-theme-toggle-border: #d1d5db;
+  --header-theme-toggle-color: #374151;
+  --header-theme-toggle-hover-bg: #e5e7eb;
+  --header-theme-toggle-hover-border: #1e40af;
+  --header-theme-toggle-hover-color: #1e40af;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #0b1220;
+  --app-surface: #111a2e;
+  --app-text: #e8eefc;
+  --app-text-muted: #9aa8c7;
+  --app-border: #24304a;
+  --dash-bg: #0f172a;
+  --dash-shell-bg: #111a2e;
+  --dash-border: #24304a;
+  --dash-card-bg: #162033;
+  --dash-input-bg: #1a2740;
+  --dash-text-primary: #edf2ff;
+  --dash-text-secondary: #9aa8c7;
+  --dash-text-muted: #b4c0dc;
+  --dash-surface-muted: #1e2d47;
+  --dash-row-border: #24304a;
+  --dash-progress-track: #24304a;
+  --dash-btn-secondary-bg: #1e2d47;
+  --dash-btn-secondary-text: #c5d0ea;
+  --dash-btn-secondary-hover: #263759;
+  --dash-goal-action-bg: #1a2740;
+  --dash-goal-action-text: #c5d0ea;
+  --dash-goal-complete-border: #2d5a3d;
+  --dash-goal-complete-bg: linear-gradient(180deg, #162033 0%, #1a3044 100%);
+  --dash-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --dash-shell-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --modal-backdrop: rgba(0, 0, 0, 0.65);
+  --alert-success-bg: #142b1f;
+  --alert-success-text: #6ee7a0;
+  --alert-success-border: #2d5a3d;
+  --alert-error-bg: #2b1515;
+  --alert-error-text: #fca5a5;
+  --alert-error-border: #5c2828;
+  --avatar-bg: #1a2740;
+  --chart-grid: #24304a;
+  --chart-text: #9aa8c7;
+  --chart-line: #4a8ae8;
+  --chart-line-fill: rgba(74, 138, 232, 0.2);
+  --auth-panel-bg: #111a2e;
+  --auth-feature-bg: #162033;
+  --auth-feature-border: #24304a;
+  --auth-feature-row-border: #24304a;
+  --auth-input-bg: #1a2740;
+  --auth-input-border: #24304a;
+  --auth-input-text: #edf2ff;
+  --auth-placeholder: #9aa8c7;
+  --auth-card-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  --header-bg: #111a2e;
+  --header-text: #edf2ff;
+  --header-border: #24304a;
+  --header-theme-toggle-bg: #24304a;
+  --header-theme-toggle-border: #5a7194;
+  --header-theme-toggle-color: #edf2ff;
+  --header-theme-toggle-hover-bg: #2d3f5c;
+  --header-theme-toggle-hover-border: #93c5fd;
+  --header-theme-toggle-hover-color: #93c5fd;
+  --header-theme-toggle-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
 
 html,
 body {
   margin: 0;
   padding: 0;
+  overflow-x: clip;
+  max-width: 100%;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --mobile-bottom-nav-height: calc(56px + env(safe-area-inset-bottom, 0));
+  }
+
+  .app-layout--dashboard app-footer .footer-container {
+    padding-bottom: calc(1.25rem + var(--mobile-bottom-nav-height));
+  }
 }

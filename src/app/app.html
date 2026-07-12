@@ -1,9 +1,9 @@
-<div>
+<div [class.app-layout--dashboard]="isDashboard()">
   <app-header></app-header>
 
   <main>
-    <router-outlet class="min-w-screen"></router-outlet>
+    <router-outlet></router-outlet>
   </main>
 
-  <app-footer class="min-w-screen"></app-footer>
+  <app-footer></app-footer>
 </div>
