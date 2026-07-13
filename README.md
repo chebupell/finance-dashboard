@@ -10,6 +10,11 @@
 
 ---
 
+## Deploy
+
+[Here](https://finance-dashboard-jmlf.onrender.com/)
+---
+
 ## Возможности
 
 - Регистрация и вход с JWT-сессией (`localStorage` / `sessionStorage`)
