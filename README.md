@@ -145,6 +145,8 @@ Open [http://localhost:4200](http://localhost:4200).
 | `npm run build` | `prisma generate` + TypeScript compilation |
 | `npm run render:build` | Render build: install, migrate deploy, tsc |
 | `npm start` | Run `dist/server.js` |
+| `npm test` | Unit and integration tests (Vitest) |
+| `npm run test:watch` | Run tests in watch mode |
 
 ### Prisma (`server/`)
 
@@ -180,9 +182,11 @@ finance-dashboard/
 ├── server/                       # Express API
 │   ├── src/
 │   │   ├── controllers/          # auth, transaction, user
-│   │   ├── routes/               # REST routes
-│   │   ├── middleware/           # JWT, error handling
-│   │   └── validators/           # Zod schemas
+│   │   ├── routes/               # REST routes + *.routes.test.ts
+│   │   ├── middleware/           # JWT, error handling + tests
+│   │   ├── validators/           # Zod schemas + tests
+│   │   └── test/                 # Vitest setup, Prisma mock, helpers
+│   ├── vitest.config.ts
 │   └── prisma/                   # schema + migrations
 │
 ├── AGENTS.md                     # Context for AI agents (Cursor)
@@ -265,6 +269,7 @@ Base URL: `http://localhost:3000/api` (dev) · `https://finance-dashboard-api-qq
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) — JWT
 - [bcryptjs](https://github.com/dcodeIO/bcrypt.js) — password hashing
 - [Zod](https://zod.dev/) — request validation
+- [Vitest](https://vitest.dev/) + [Supertest](https://github.com/ladjs/supertest) — API tests
 
 ---
 
@@ -285,14 +290,29 @@ On deploy, update `apiUrl` in `environment.production.ts` and `FRONTEND_URL` in 
 
 ## Testing
 
+### Frontend (Vitest via Angular CLI)
+
 ```bash
-# Frontend (Vitest)
 npm test
 ```
 
-Unit tests cover: `app`, guards, auth, transaction, layout components, login/sign-up/home pages.
+Unit tests (`*.spec.ts`) cover: `app`, guards, auth, transaction services, layout components, login/sign-up/home pages.
 
-Backend tests are not set up yet.
+### Backend (Vitest + Supertest)
+
+```bash
+cd server
+npm test          # single run
+npm run test:watch
+```
+
+Tests live next to source as `*.test.ts`. Prisma is mocked via `server/src/test/prisma-mock.ts` — no database required.
+
+| Area | Files |
+|------|-------|
+| Routes | `auth.routes.test.ts`, `transaction.routes.test.ts`, `user.routes.test.ts` |
+| Middleware | `auth.middleware.test.ts`, `error.middleware.test.ts` |
+| Validators | `auth.validator.test.ts`, `transaction.validator.test.ts`, `user.validator.test.ts` |
 
 ---
 

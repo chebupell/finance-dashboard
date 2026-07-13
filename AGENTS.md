@@ -1,209 +1,264 @@
-# Finance Dashboard — руководство для AI-агентов
+# Finance Dashboard — AI Agent Guide
 
-Полнофункциональный личный финансовый дашборд: Angular 21 (frontend) + Express 5 + Prisma + PostgreSQL/Neon (backend).
+Full-featured personal finance dashboard: Angular 21 (frontend) + Express 5 + Prisma + PostgreSQL/Neon (backend).
 
-## Обзор
+## Overview
 
-| Часть | Стек | Порт по умолчанию |
-| ------- | ------ | ------------------- |
+| Part | Stack | Default Port |
+| ------ | ------ | ------------------- |
 | Frontend | Angular 21, Tailwind CSS 4, Chart.js / ng2-charts | `4200` |
-| Backend | Express 5, Prisma 7, JWT, Zod, bcryptjs | `3000` |
-| БД | PostgreSQL через Neon (`@prisma/adapter-neon`) | — |
+| Backend | Express 5, Prisma 7, JWT, Zod, bcryptjs, Vitest + Supertest | `3000` |
+| Database | PostgreSQL via Neon (`@prisma/adapter-neon`) | — |
 
-Frontend обращается к API по адресу `http://localhost:3000/api` (см. `src/environment/environment.ts`).
+The frontend calls the API at `http://localhost:3000/api` in dev (see `src/environment/environment.ts`). Production uses `environment.production.ts` (see `angular.json` → `fileReplacements`).
 
-## Структура проекта
+**Deployed:** Frontend on Render · API at `https://finance-dashboard-api-qqwg.onrender.com/api`
+
+## Project Structure
 
 ```text
 finance-dashboard/
-├── src/                          # Angular-приложение
-│   ├── main.ts                   # Точка входа
-│   ├── styles.css                # Глобальные стили + Tailwind
+├── src/                          # Angular application
+│   ├── main.ts                   # Entry point
+│   ├── styles.css                # Global styles + Tailwind
 │   ├── environment/
-│   │   └── environment.ts        # apiUrl
+│   │   ├── environment.ts        # apiUrl (dev)
+│   │   └── environment.production.ts
 │   └── app/
-│       ├── app.ts                # Корневой компонент (Header + Footer + RouterOutlet)
-│       ├── app.config.ts         # Провайдеры: router, HttpClient, interceptor
-│       ├── app.routes.ts         # Маршруты и guards
+│       ├── app.ts                # Root component (Header + Footer + RouterOutlet)
+│       ├── app.config.ts         # Providers: router, HttpClient, interceptor
+│       ├── app.routes.ts         # Routes and guards
 │       ├── interceptors/
 │       │   └── auth.interceptor.ts
 │       ├── services/
-│       │   ├── auth.ts           # Регистрация, логин, сессия
-│       │   ├── auth-guard.ts     # Защита приватных страниц
-│       │   ├── guest-guard.ts    # Редирект авторизованных с login/sign-up
-│       │   └── transaction.ts    # CRUD транзакций
+│       │   ├── auth.ts           # Register, login, session
+│       │   ├── user.ts           # Profile updates
+│       │   ├── transaction.ts    # Transaction CRUD
+│       │   ├── theme.ts          # Light/dark theme
+│       │   ├── locale.ts         # EN / RU localization
+│       │   ├── auth-guard.ts     # Protect private pages
+│       │   └── guest-guard.ts    # Redirect authenticated users from login/sign-up
 │       ├── pages/
-│       │   ├── home-page/        # Дашборд: графики, таблица, добавление транзакций
+│       │   ├── home-page/        # Dashboard, transactions, goals, settings (sidebar views)
+│       │   │   └── settings-view/
 │       │   ├── login-page/
 │       │   └── sign-up-page/
 │       └── layout/
-│           ├── header/           # Навигация, login/sign-up/logout
+│           ├── header/           # Navigation, login/sign-up/logout
 │           ├── footer/
-│           └── sidebar/          # Боковое меню (только на home)
+│           └── sidebar/          # Side menu (home page only)
+│
+├── public/                       # Static assets (SPA redirects, theme icons)
 │
 ├── server/                       # Express API
-│   ├── server.ts                 # Запуск сервера (PORT из .env)
+│   ├── server.ts                 # Server bootstrap (PORT from .env)
 │   ├── prisma.config.ts          # Prisma config (DIRECT_URL)
+│   ├── vitest.config.ts
 │   ├── prisma/
-│   │   ├── schema.prisma         # Модели User, Transaction
+│   │   ├── schema.prisma         # User, Transaction models
 │   │   └── migrations/
 │   └── src/
-│       ├── app.ts                # Express app, CORS, маршруты
+│       ├── app.ts                # Express app, CORS, routes, request logging
 │       ├── lib/prisma.ts         # PrismaClient + Neon adapter
 │       ├── controllers/          # auth, transaction, user
-│       ├── routes/               # /api/auth, /api/transactions, /api/users
-│       ├── middleware/           # auth, error handling
-│       ├── validators/           # Zod-схемы
-│       └── types/                # User, расширение Express Request
+│       ├── routes/               # /api/auth, /api/transactions, /api/users + *.routes.test.ts
+│       ├── middleware/           # auth, error handling + tests
+│       ├── validators/           # Zod schemas + tests
+│       ├── test/                 # Vitest setup, Prisma mock, helpers
+│       └── types/                # User, Express Request extension
 │
-├── angular.json                  # Конфигурация Angular CLI
-├── package.json                  # Скрипты frontend
-└── dist/                         # Сборка frontend (генерируется)
+├── angular.json                  # Angular CLI configuration
+├── package.json                  # Frontend scripts
+└── dist/                         # Frontend build output (generated)
 ```
 
-## Ключевые модули
+## Key Modules
 
 ### Frontend
 
-**Маршрутизация** (`app.routes.ts`):
+**Routing** (`app.routes.ts`):
 
-- `/` — HomePage, защищён `authGuard` (редирект на `/sign-up` если не авторизован)
-- `/login`, `/sign-up` — защищены `guestGuard` (редирект на `/` если авторизован)
-- `/home` — редирект на `/`
+- `/` — HomePage, protected by `authGuard` (redirects to `/sign-up` if not authenticated)
+- `/login`, `/sign-up` — protected by `guestGuard` (redirect to `/` if authenticated)
+- `/home` — redirect to `/`
+
+Transactions, Goals, and Settings are **views inside HomePage**, switched via the sidebar — not separate URLs.
 
 **Auth** (`services/auth.ts`):
 
-- JWT хранится в `localStorage` (если `enableAutoLogin`) или `sessionStorage`
-- `loggedIn` — signal, обновляется при login/register/logout
-- Методы: `register()`, `login()`, `logout()`, `getUserData()`, `isLoggedIn()`
+- JWT stored in `localStorage` (if `enableAutoLogin`) or `sessionStorage`
+- `loggedIn` — signal, updated on login/register/logout
+- Methods: `register()`, `login()`, `logout()`, `getUserData()`, `isLoggedIn()`
 
-**Транзакции** (`services/transaction.ts`):
+**User profile** (`services/user.ts`):
 
-- `getAll()`, `create()`, `delete(id)` — запросы с Bearer-токеном
-- Тип: `income` | `expense`
+- `updateProfile()` — `PATCH /users/profile` (name, email, password)
+
+**Transactions** (`services/transaction.ts`):
+
+- `getAll()`, `create()`, `delete(id)` — requests with Bearer token
+- Type: `income` | `expense`
 
 **HomePage** (`pages/home-page/home-page.ts`):
 
-- Загрузка транзакций, summary-карточки (balance, income, expenses, savings)
-- Line chart — баланс по месяцам (Chart.js)
-- Doughnut chart — расходы по категориям
-- Форма добавления транзакции (amount, description, category, type)
+- Summary cards: balance, income, expenses, savings
+- Line chart — balance by month (Chart.js)
+- Doughnut chart — expenses by category
+- Transaction form (amount, description, category, type) and search
+- Financial goals — create, deposit, withdraw, delete; stored in `localStorage`
+- Settings view — profile, theme, locale, avatar (avatar stored locally in the browser)
 
-**UI-паттерны**:
+**UI patterns**:
 
-- Standalone-компоненты, lazy loading через `loadComponent`
-- Signals + `computed` + `OnPush` change detection
-- Reactive Forms на login/sign-up
-- Tailwind CSS 4 (`@import 'tailwindcss'` в `styles.css`)
+- Standalone components, lazy loading via `loadComponent`
+- Signals + `computed` + OnPush change detection
+- Reactive Forms on login/sign-up
+- Tailwind CSS 4 (`@import 'tailwindcss'` in `styles.css`)
+- Light/dark theme via `Theme` service (`data-theme` on `<html>`)
+- EN / RU localization via `Locale` service
 
 ### Backend
 
-**API-маршруты** (`server/src/app.ts`):
+**API routes** (`server/src/app.ts`):
 
-| Prefix | Файл | Описание |
+| Prefix | File | Description |
 | -------- | ------ | ---------- |
 | `/api/auth` | `authRoutes.ts` | POST `/register`, POST `/login` |
-| `/api/transactions` | `transactionRoutes.ts` | GET `/`, POST `/`, DELETE `/:id` (требуют JWT) |
-| `/api/users` | `userRoutes.ts` | GET `/`, GET `/:id`, DELETE `/:id` (требуют JWT) |
+| `/api/transactions` | `transactionRoutes.ts` | GET `/`, POST `/`, DELETE `/:id` (JWT required) |
+| `/api/users` | `userRoutes.ts` | PATCH `/profile`, GET `/`, GET `/:id`, DELETE `/:id` (JWT required) |
 
-**Аутентификация**:
+**Authentication**:
 
-- JWT payload: `{ userId: number }`, срок 7 дней
-- `auth.middleware.ts` — извлекает `userId` в `req.userId`
-- Пароли хешируются bcrypt (10 rounds)
+- JWT payload: `{ userId: number }`, 7-day expiry
+- `auth.middleware.ts` — extracts `userId` into `req.userId`
+- Passwords hashed with bcrypt (10 rounds)
 
-**Валидация** (Zod):
+**Validation** (Zod):
 
 - `auth.validator.ts` — register (name, email, password, confirmPassword, enableAutoLogin), login
 - `transaction.validator.ts` — amount > 0, type: `income` | `expense`
+- `user.validator.ts` — profile update (name, email, currentPassword, newPassword)
 
-**База данных** (`prisma/schema.prisma`):
+**Database** (`prisma/schema.prisma`):
 
 - `User`: id, name, email (unique), password, enableAutoLogin
 - `Transaction`: id, amount, description, category, type, date, userId → User
 
-**Ошибки** (`error.middleware.ts`):
+**Errors** (`error.middleware.ts`):
 
-- `AppError` — контролируемые ошибки с statusCode
-- Prisma-ошибки → 400
-- Dev-режим возвращает `details` в 500-ответах
+- `AppError` — controlled errors with statusCode
+- Prisma errors → 400
+- Dev mode returns `details` in 500 responses
 
-## Команды
+## Commands
 
-### Frontend (корень проекта)
+### Frontend (project root)
 
 ```bash
-npm install          # Установка зависимостей
+npm install          # Install dependencies
 npm start            # ng serve → http://localhost:4200
-npm run build        # Production-сборка в dist/
-npm run watch        # Сборка в dev-режиме с watch
-npm test             # Unit-тесты (Vitest через ng test)
-ng generate component <name>   # Генерация компонента
+npm run build        # Production build to dist/
+npm run watch        # Dev build with watch
+npm test             # Unit tests (Vitest via ng test)
+ng generate component <name>   # Generate a component
 ```
 
 ### Backend (`server/`)
 
 ```bash
 cd server
-npm install          # Установка зависимостей
+npm install          # Install dependencies
 npm run dev          # nodemon + ts-node (hot reload)
 npm run build        # prisma generate && tsc
-npm start            # build + node dist/server.js
+npm run render:build # Render deploy: install, migrate deploy, tsc
+npm start            # node dist/server.js
+npm test             # Unit and integration tests (Vitest)
+npm run test:watch   # Tests in watch mode
 ```
 
-### Prisma (из `server/`)
+### Prisma (from `server/`)
 
 ```bash
-npx prisma generate              # Генерация клиента
-npx prisma migrate dev           # Применить миграции (dev)
-npx prisma migrate deploy        # Применить миграции (prod)
-npx prisma studio                # GUI для БД
+npx prisma generate              # Generate client
+npx prisma migrate dev           # Apply migrations (dev)
+npx prisma migrate deploy        # Apply migrations (prod)
+npx prisma studio                # Database GUI
 ```
 
-### Запуск полного стека
+### Full stack
 
-Терминал 1 (backend):
+Terminal 1 (backend):
 
 ```bash
 cd server && npm run dev
 ```
 
-Терминал 2 (frontend):
+Terminal 2 (frontend):
 
 ```bash
 npm start
 ```
 
-## Переменные окружения
+## Environment Variables
 
-Файл `server/.env` (не коммитится):
+File `server/.env` (not committed):
 
-| Переменная | Назначение |
+| Variable | Purpose |
 | ------------ | ------------ |
-| `DATABASE_URL` | Connection string для Prisma Neon adapter (runtime) |
-| `DIRECT_URL` | Прямое подключение для миграций (`prisma.config.ts`) |
-| `JWT_SECRET` | Секрет для подписи JWT |
-| `PORT` | Порт сервера (по умолчанию `3000`) |
-| `NODE_ENV` | `production` скрывает детали ошибок |
+| `DATABASE_URL` | Connection string for Prisma Neon adapter (runtime) |
+| `DIRECT_URL` | Direct connection for migrations (`prisma.config.ts`) |
+| `JWT_SECRET` | Secret for signing JWT |
+| `PORT` | Server port (default `3000`) |
+| `FRONTEND_URL` | CORS origin (default `http://localhost:4200`) |
+| `NODE_ENV` | `production` hides error details |
 
-## Соглашения для агентов
+On deploy, update `apiUrl` in `environment.production.ts` and `FRONTEND_URL` in the backend environment.
 
-1. **Минимальный diff** — не трогать несвязанный код; frontend и backend — отдельные `package.json`.
-2. **Стиль Angular** — standalone-компоненты, `inject()`, signals, `OnPush`, lazy routes.
-3. **Стиль backend** — контроллеры как static-методы, ошибки через `AppError` + `next(err)`, валидация через Zod middleware.
-4. **CORS** — разрешён только `http://localhost:4200`; при смене порта frontend обновить `server/src/app.ts`.
-5. **API URL** — при деплое обновить `src/environment/environment.ts`.
-6. **Тесты** — frontend: `*.spec.ts` рядом с файлами; backend: тестов пока нет.
-7. **Не коммитить** — `server/.env`, `node_modules/`, `dist/`, `.angular/cache/`.
+## Testing
 
-## Известные особенности
+### Frontend
 
-- `authGuard` редиректит неавторизованных на `/sign-up`, а не на `/login`.
-- OAuth-кнопки (Google, Apple, Facebook) — заглушки (`console.log`).
-- `userController.getAll` имеет несоответствие сигнатуры `(res)` вместо `(req, res)` — может вызывать ошибки.
-- Категории расходов захардкожены в `home-page.ts`: Labour, Legal, Production, License, Facilities, Taxes, Insurance.
+```bash
+npm test
+```
 
-## Написание кода
+Unit tests (`*.spec.ts`) next to source: app, guards, auth, transaction services, layout components, login/sign-up/home pages.
+
+### Backend
+
+```bash
+cd server
+npm test
+npm run test:watch
+```
+
+Tests live next to source as `*.test.ts`. Prisma is mocked via `server/src/test/prisma-mock.ts` — no database required.
+
+| Area | Files |
+|------|-------|
+| Routes | `auth.routes.test.ts`, `transaction.routes.test.ts`, `user.routes.test.ts` |
+| Middleware | `auth.middleware.test.ts`, `error.middleware.test.ts` |
+| Validators | `auth.validator.test.ts`, `transaction.validator.test.ts`, `user.validator.test.ts` |
+
+## Agent Conventions
+
+1. **Minimal diff** — do not touch unrelated code; frontend and backend have separate `package.json` files.
+2. **Angular style** — standalone components, `inject()`, signals, OnPush, lazy routes.
+3. **Backend style** — controllers as static methods, errors via `AppError` + `next(err)`, validation via Zod middleware.
+4. **CORS** — configured via `FRONTEND_URL` in `server/src/app.ts` (default `http://localhost:4200`); update when changing the frontend port or deploy URL.
+5. **API URL** — update `src/environment/environment.ts` (dev) and `environment.production.ts` (prod) on deploy.
+6. **Tests** — frontend: `*.spec.ts` next to files; backend: `*.test.ts` next to files, use existing Prisma mock.
+7. **Do not commit** — `server/.env`, `node_modules/`, `dist/`, `.angular/cache/`.
+
+## Known Quirks
+
+- `authGuard` redirects unauthenticated users to `/sign-up`, not `/login`.
+- OAuth buttons (Google, Apple, Facebook) are stubs (`console.log`).
+- Expense categories are hardcoded in `home-page.ts`: Labour, Legal, Production, License, Facilities, Taxes, Insurance.
+- Financial goals are client-side only (`localStorage`); not persisted to the API.
+- User avatar is stored locally in the browser, not on the server.
+
+## Writing Code
 
 Before adding code:
 
