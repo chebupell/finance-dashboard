@@ -22,6 +22,9 @@ Production-сборка frontend подставляет `environment.production.
 ---
 
 <img width="1907" height="944" alt="{2BAF6834-BA09-4F7A-8631-148E02EEA6A4}" src="https://github.com/user-attachments/assets/905dd1c7-624c-4fef-83c5-48b0ec72ea4c" />
+<img width="1920" height="1080" alt="{20B3F542-2327-4C1E-9B57-62F4CC43E3B4}" src="https://github.com/user-attachments/assets/b76f0284-3c85-4508-a1c5-7b96f3141085" />
+<img width="1920" height="1080" alt="{8D9AA61F-0F70-40BD-8435-5916BDB4011F}" src="https://github.com/user-attachments/assets/0f8b3df7-f173-4c9d-8bed-40169be29ee2" />
+<img width="1920" height="1080" alt="{F8E61B1A-8195-42A3-A0A5-E1B51AF6C1EE}" src="https://github.com/user-attachments/assets/a9431e5c-5dc7-411e-ad98-8cbb0c48ded6" />
 
 
 ## Возможности
