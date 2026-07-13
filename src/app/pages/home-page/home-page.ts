@@ -36,14 +36,17 @@ const GOAL_CATEGORIES = ['Savings', 'Travel', 'Transport', 'Education', 'Home', 
 
 type GoalFundsMode = 'deposit' | 'withdraw';
 
-const EXPENSE_LABELS = [
-  'Labour',
-  'Legal',
-  'Production',
-  'License',
-  'Facilities',
-  'Taxes',
-  'Insurance',
+const PIE_CHART_COLORS = [
+  '#2f6bd1',
+  '#4a8ae8',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#6366f1',
 ] as const;
 const MONTHS = [
   'Jan',
@@ -227,15 +230,38 @@ export class HomePage implements OnInit {
   readonly balanceOverviewType: ChartConfiguration<'line'>['type'] = 'line';
 
   readonly pieChartData = computed<ChartConfiguration<'doughnut'>['data']>(() => {
-    const expenseTransactions = this.transactions().filter((t) => t.type === 'expense');
-    const data = EXPENSE_LABELS.map((label) =>
-      expenseTransactions.filter((t) => t.category === label).reduce((sum, t) => sum + t.amount, 0),
-    );
+    const totals = new Map<string, number>();
+
+    for (const transaction of this.transactions()) {
+      const category = transaction.category?.trim() || 'Other';
+      totals.set(category, (totals.get(category) ?? 0) + Number(transaction.amount));
+    }
+
+    const entries = Array.from(totals.entries())
+      .filter(([, amount]) => amount > 0)
+      .sort((a, b) => b[1] - a[1]);
+
+    const labels = entries.map(([category]) => category);
+    const data = entries.map(([, amount]) => amount);
+
     return {
-      labels: [...EXPENSE_LABELS],
-      datasets: [{ data }],
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: labels.map(
+            (_, index) => PIE_CHART_COLORS[index % PIE_CHART_COLORS.length],
+          ),
+        },
+      ],
     };
   });
+
+  readonly pieChartKey = computed(() =>
+    this.transactions()
+      .map((transaction) => `${transaction.id}:${transaction.category}:${transaction.amount}:${transaction.type}`)
+      .join('|'),
+  );
 
   readonly pieChartOptions = computed<ChartConfiguration<'doughnut'>['options']>(() => {
     this.theme.mode();
