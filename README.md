@@ -1,5 +1,7 @@
 # Finance Dashboard
 
+![CI](https://github.com/chebupell/finance-dashboard/actions/workflows/ci.yml/badge.svg)
+
 A personal finance dashboard for tracking income and expenses with visualizations, financial goals, and JWT authentication.
 
 | Frontend | Backend | Database |
