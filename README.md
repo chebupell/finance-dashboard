@@ -12,7 +12,7 @@
 
 ## Deploy
 
-**[Here](https://finance-dashboard-jmlf.onrender.com/)
+**[Here](https://finance-dashboard-jmlf.onrender.com/)**
 
 ---
 
