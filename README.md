@@ -1,23 +1,23 @@
 # Finance Dashboard
 
-Личный финансовый дашборд для учёта доходов и расходов с визуализацией, финансовыми целями и JWT-аутентификацией.
+A personal finance dashboard for tracking income and expenses with visualizations, financial goals, and JWT authentication.
 
-| Frontend | Backend | База данных |
-|----------|---------|-------------|
+| Frontend | Backend | Database |
+|----------|---------|----------|
 | Angular 21 · Tailwind CSS 4 · Chart.js | Express 5 · Prisma 7 · JWT · Zod | PostgreSQL (Neon) |
 
-**Локальные адреса:** [http://localhost:4200](http://localhost:4200) (UI) · [http://localhost:3000/api](http://localhost:3000/api) (API)
+**Local URLs:** [http://localhost:4200](http://localhost:4200) (UI) · [http://localhost:3000/api](http://localhost:3000/api) (API)
 
 ---
 
 ## Deploy
 
-| Сервис | URL |
-|--------|-----|
+| Service | URL |
+|---------|-----|
 | Frontend (Render) | [https://finance-dashboard-jmlf.onrender.com](https://finance-dashboard-jmlf.onrender.com) |
 | API (Render) | [https://finance-dashboard-api-qqwg.onrender.com/api](https://finance-dashboard-api-qqwg.onrender.com/api) |
 
-Production-сборка frontend подставляет `environment.production.ts` (см. `angular.json` → `fileReplacements`). CORS на backend настраивается через переменную `FRONTEND_URL`.
+The production frontend build uses `environment.production.ts` (see `angular.json` → `fileReplacements`). Backend CORS is configured via the `FRONTEND_URL` environment variable.
 
 ---
 
@@ -26,47 +26,46 @@ Production-сборка frontend подставляет `environment.production.
 <img width="1920" height="1080" alt="{8D9AA61F-0F70-40BD-8435-5916BDB4011F}" src="https://github.com/user-attachments/assets/0f8b3df7-f173-4c9d-8bed-40169be29ee2" />
 <img width="1920" height="1080" alt="{F8E61B1A-8195-42A3-A0A5-E1B51AF6C1EE}" src="https://github.com/user-attachments/assets/a9431e5c-5dc7-411e-ad98-8cbb0c48ded6" />
 
+## Features
 
-## Возможности
+### Authentication & Profile
 
-### Аутентификация и профиль
+- Registration and login with JWT session (`localStorage` / `sessionStorage`)
+- Profile updates: name, email, password (`PATCH /users/profile`)
+- User avatar (stored locally in the browser)
+- Route protection via `authGuard` and `guestGuard`
 
-- Регистрация и вход с JWT-сессией (`localStorage` / `sessionStorage`)
-- Обновление профиля: имя, email, пароль (`PATCH /users/profile`)
-- Аватар пользователя (хранится локально в браузере)
-- Защита маршрутов через `authGuard` и `guestGuard`
+### Dashboard & Transactions
 
-### Дашборд и транзакции
+- Summary cards: balance, income, expenses, savings
+- Charts: monthly balance trend (line) and expense breakdown by category (doughnut)
+- Transaction CRUD: view, add, delete
+- Transaction search
+- Sidebar navigation: Dashboard · Transactions · Goals · Settings
 
-- Карточки сводки: баланс, доходы, расходы, сбережения
-- Графики: динамика баланса по месяцам (line) и структура расходов по категориям (doughnut)
-- CRUD транзакций: просмотр, добавление, удаление
-- Поиск по транзакциям
-- Боковая навигация: Dashboard · Transactions · Goals · Settings
+### Financial Goals
 
-### Финансовые цели
+- Create, deposit, withdraw, and delete goals
+- Progress bars and summary cards for goals
+- Goal data stored in `localStorage` (client-side)
 
-- Создание, пополнение, снятие и удаление целей
-- Прогресс-бары и сводные карточки по целям
-- Данные целей хранятся в `localStorage` (клиентская часть)
+### UI
 
-### Интерфейс
-
-- Светлая и тёмная тема (`Theme` service, `data-theme` на `<html>`)
-- Локализация EN / RU (`Locale` service)
-- Валидация на клиенте (Reactive Forms) и сервере (Zod)
+- Light and dark theme (`Theme` service, `data-theme` on `<html>`)
+- EN / RU localization (`Locale` service)
+- Client-side validation (Reactive Forms) and server-side validation (Zod)
 
 ---
 
-## Быстрый старт
+## Quick Start
 
-### Требования
+### Requirements
 
 - [Node.js](https://nodejs.org/) 20+
 - [npm](https://www.npmjs.com/) 11+
-- PostgreSQL-база (рекомендуется [Neon](https://neon.tech/))
+- PostgreSQL database (recommended: [Neon](https://neon.tech/))
 
-### 1. Клонирование и установка
+### 1. Clone & Install
 
 ```bash
 # Frontend
@@ -77,9 +76,9 @@ cd server
 npm install
 ```
 
-### 2. Настройка окружения
+### 2. Environment Setup
 
-Создайте файл `server/.env`:
+Create `server/.env`:
 
 ```env
 DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
@@ -90,16 +89,16 @@ FRONTEND_URL="http://localhost:4200"
 NODE_ENV="development"
 ```
 
-| Переменная | Назначение |
-|------------|------------|
-| `DATABASE_URL` | Подключение для runtime (Prisma Neon adapter) |
-| `DIRECT_URL` | Прямое подключение для миграций Prisma |
-| `JWT_SECRET` | Секрет для подписи JWT |
-| `PORT` | Порт API (по умолчанию `3000`) |
-| `FRONTEND_URL` | Origin для CORS (по умолчанию `http://localhost:4200`) |
-| `NODE_ENV` | `production` скрывает детали ошибок в ответах 500 |
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Runtime connection (Prisma Neon adapter) |
+| `DIRECT_URL` | Direct connection for Prisma migrations |
+| `JWT_SECRET` | Secret for signing JWT tokens |
+| `PORT` | API port (default: `3000`) |
+| `FRONTEND_URL` | CORS origin (default: `http://localhost:4200`) |
+| `NODE_ENV` | `production` hides error details in 500 responses |
 
-### 3. Миграции базы данных
+### 3. Database Migrations
 
 ```bash
 cd server
@@ -107,65 +106,65 @@ npx prisma migrate dev
 npx prisma generate
 ```
 
-### 4. Запуск
+### 4. Run
 
-Откройте два терминала:
+Open two terminals:
 
 ```bash
-# Терминал 1 — API
+# Terminal 1 — API
 cd server
 npm run dev
 ```
 
 ```bash
-# Терминал 2 — UI
+# Terminal 2 — UI
 npm start
 ```
 
-Откройте [http://localhost:4200](http://localhost:4200).
+Open [http://localhost:4200](http://localhost:4200).
 
 ---
 
-## Скрипты
+## Scripts
 
-### Frontend (корень проекта)
+### Frontend (project root)
 
-| Команда | Описание |
-|---------|----------|
-| `npm start` | Dev-сервер на порту 4200 |
-| `npm run build` | Production-сборка в `dist/` |
-| `npm run watch` | Сборка в dev-режиме с watch |
-| `npm test` | Unit-тесты (Vitest) |
-| `ng generate component <name>` | Генерация компонента |
+| Command | Description |
+|---------|-------------|
+| `npm start` | Dev server on port 4200 |
+| `npm run build` | Production build to `dist/` |
+| `npm run watch` | Dev build with watch |
+| `npm test` | Unit tests (Vitest) |
+| `ng generate component <name>` | Generate a component |
 
 ### Backend (`server/`)
 
-| Команда | Описание |
-|---------|----------|
-| `npm run dev` | Dev-сервер с hot reload (nodemon + ts-node) |
-| `npm run build` | `prisma generate` + компиляция TypeScript |
-| `npm run render:build` | Сборка для Render: install, migrate deploy, tsc |
-| `npm start` | Запуск `dist/server.js` |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server with hot reload (nodemon + ts-node) |
+| `npm run build` | `prisma generate` + TypeScript compilation |
+| `npm run render:build` | Render build: install, migrate deploy, tsc |
+| `npm start` | Run `dist/server.js` |
 
 ### Prisma (`server/`)
 
-| Команда | Описание |
-|---------|----------|
-| `npx prisma generate` | Генерация Prisma Client |
-| `npx prisma migrate dev` | Создание и применение миграций (dev) |
-| `npx prisma migrate deploy` | Применение миграций (prod) |
-| `npx prisma studio` | Веб-интерфейс для просмотра БД |
+| Command | Description |
+|---------|-------------|
+| `npx prisma generate` | Generate Prisma Client |
+| `npx prisma migrate dev` | Create and apply migrations (dev) |
+| `npx prisma migrate deploy` | Apply migrations (prod) |
+| `npx prisma studio` | Web UI for browsing the database |
 
 ---
 
-## Структура проекта
+## Project Structure
 
 ```
 finance-dashboard/
-├── src/                          # Angular-приложение
+├── src/                          # Angular application
 │   ├── app/
 │   │   ├── pages/
-│   │   │   ├── home-page/        # Дашборд, транзакции, цели, настройки
+│   │   │   ├── home-page/        # Dashboard, transactions, goals, settings
 │   │   │   │   └── settings-view/
 │   │   │   ├── login-page/
 │   │   │   └── sign-up-page/
@@ -173,20 +172,20 @@ finance-dashboard/
 │   │   ├── services/             # auth, transaction, user, theme, locale, guards
 │   │   └── interceptors/         # JWT interceptor
 │   └── environment/
-│       ├── environment.ts        # apiUrl для dev
+│       ├── environment.ts        # apiUrl for dev
 │       └── environment.production.ts
 │
-├── public/                       # Статика (SPA redirects, иконки темы)
+├── public/                       # Static assets (SPA redirects, theme icons)
 │
 ├── server/                       # Express API
 │   ├── src/
 │   │   ├── controllers/          # auth, transaction, user
-│   │   ├── routes/               # REST-маршруты
-│   │   ├── middleware/           # JWT, обработка ошибок
-│   │   └── validators/           # Zod-схемы
+│   │   ├── routes/               # REST routes
+│   │   ├── middleware/           # JWT, error handling
+│   │   └── validators/           # Zod schemas
 │   └── prisma/                   # schema + migrations
 │
-├── AGENTS.md                     # Контекст для AI-агентов (Cursor)
+├── AGENTS.md                     # Context for AI agents (Cursor)
 └── README.md
 ```
 
@@ -194,26 +193,26 @@ finance-dashboard/
 
 ## API
 
-Базовый URL: `http://localhost:3000/api` (dev) · `https://finance-dashboard-api-qqwg.onrender.com/api` (prod)
+Base URL: `http://localhost:3000/api` (dev) · `https://finance-dashboard-api-qqwg.onrender.com/api` (prod)
 
-### Аутентификация
+### Authentication
 
-| Метод | Endpoint | Auth | Описание |
-|-------|----------|------|----------|
-| `POST` | `/auth/register` | — | Регистрация |
-| `POST` | `/auth/login` | — | Вход |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/auth/register` | — | Register |
+| `POST` | `/auth/login` | — | Login |
 
-**Ответ:** `{ token: string, user: { id, name, email } }`
+**Response:** `{ token: string, user: { id, name, email } }`
 
-### Транзакции
+### Transactions
 
-| Метод | Endpoint | Auth | Описание |
-|-------|----------|------|----------|
-| `GET` | `/transactions` | JWT | Список транзакций пользователя |
-| `POST` | `/transactions` | JWT | Создание транзакции |
-| `DELETE` | `/transactions/:id` | JWT | Удаление транзакции |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/transactions` | JWT | List user transactions |
+| `POST` | `/transactions` | JWT | Create a transaction |
+| `DELETE` | `/transactions/:id` | JWT | Delete a transaction |
 
-**Тело POST:**
+**POST body:**
 
 ```json
 {
@@ -226,36 +225,36 @@ finance-dashboard/
 
 `type`: `"income"` | `"expense"`
 
-### Пользователи
+### Users
 
-| Метод | Endpoint | Auth | Описание |
-|-------|----------|------|----------|
-| `PATCH` | `/users/profile` | JWT | Обновление профиля (имя, email, пароль) |
-| `GET` | `/users` | JWT | Список пользователей |
-| `GET` | `/users/:id` | JWT | Пользователь по ID |
-| `DELETE` | `/users/:id` | JWT | Удаление пользователя |
-
----
-
-## Маршруты приложения
-
-| Путь | Страница | Доступ |
-|------|----------|--------|
-| `/` | Дашборд (sidebar: dashboard / transactions / goals / settings) | Только авторизованные |
-| `/login` | Вход | Только гости |
-| `/sign-up` | Регистрация | Только гости |
-| `/home` | → редирект на `/` | — |
-
-> Разделы Transactions, Goals и Settings — это представления внутри `HomePage`, переключаемые через боковое меню, а не отдельные URL.
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `PATCH` | `/users/profile` | JWT | Update profile (name, email, password) |
+| `GET` | `/users` | JWT | List users |
+| `GET` | `/users/:id` | JWT | Get user by ID |
+| `DELETE` | `/users/:id` | JWT | Delete user |
 
 ---
 
-## Стек технологий
+## Application Routes
+
+| Path | Page | Access |
+|------|------|--------|
+| `/` | Dashboard (sidebar: dashboard / transactions / goals / settings) | Authenticated only |
+| `/login` | Login | Guests only |
+| `/sign-up` | Sign up | Guests only |
+| `/home` | → redirect to `/` | — |
+
+> Transactions, Goals, and Settings are views inside `HomePage`, switched via the sidebar — not separate URLs.
+
+---
+
+## Tech Stack
 
 **Frontend**
 
-- [Angular 21](https://angular.dev/) — standalone-компоненты, signals, lazy routes, OnPush
-- [Tailwind CSS 4](https://tailwindcss.com/) — CSS-переменные для светлой/тёмной темы
+- [Angular 21](https://angular.dev/) — standalone components, signals, lazy routes, OnPush
+- [Tailwind CSS 4](https://tailwindcss.com/) — CSS variables for light/dark theme
 - [Chart.js](https://www.chartjs.org/) + [ng2-charts](https://github.com/valor-software/ng2-charts)
 - [RxJS](https://rxjs.dev/)
 
@@ -264,46 +263,46 @@ finance-dashboard/
 - [Express 5](https://expressjs.com/)
 - [Prisma 7](https://www.prisma.io/) + [@prisma/adapter-neon](https://www.npmjs.com/package/@prisma/adapter-neon)
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) — JWT
-- [bcryptjs](https://github.com/dcodeIO/bcrypt.js) — хеширование паролей
-- [Zod](https://zod.dev/) — валидация запросов
+- [bcryptjs](https://github.com/dcodeIO/bcrypt.js) — password hashing
+- [Zod](https://zod.dev/) — request validation
 
 ---
 
-## Конфигурация
+## Configuration
 
-| Файл | Назначение |
-|------|------------|
-| `src/environment/environment.ts` | URL API для dev |
-| `src/environment/environment.production.ts` | URL API для production-сборки |
-| `server/.env` | Секреты, БД, CORS (`FRONTEND_URL`) |
-| `server/src/app.ts` | CORS, логирование запросов |
-| `server/prisma/schema.prisma` | Модели `User` и `Transaction` |
-| `public/_redirects` | SPA fallback для статического хостинга |
+| File | Purpose |
+|------|---------|
+| `src/environment/environment.ts` | API URL for dev |
+| `src/environment/environment.production.ts` | API URL for production build |
+| `server/.env` | Secrets, database, CORS (`FRONTEND_URL`) |
+| `server/src/app.ts` | CORS, request logging |
+| `server/prisma/schema.prisma` | `User` and `Transaction` models |
+| `public/_redirects` | SPA fallback for static hosting |
 
-При деплое обновите `apiUrl` в `environment.production.ts` и `FRONTEND_URL` в переменных окружения backend.
+On deploy, update `apiUrl` in `environment.production.ts` and `FRONTEND_URL` in the backend environment variables.
 
 ---
 
-## Тестирование
+## Testing
 
 ```bash
 # Frontend (Vitest)
 npm test
 ```
 
-Покрыты unit-тестами: `app`, guards, auth, transaction, layout-компоненты, login/sign-up/home pages.
+Unit tests cover: `app`, guards, auth, transaction, layout components, login/sign-up/home pages.
 
-Backend-тесты пока не настроены.
-
----
-
-## Для AI-агентов
-
-Подробное описание архитектуры, соглашений и известных особенностей — в [AGENTS.md](./AGENTS.md).
+Backend tests are not set up yet.
 
 ---
 
-## Полезные ссылки
+## For AI Agents
+
+See [AGENTS.md](./AGENTS.md) for detailed architecture, conventions, and known quirks.
+
+---
+
+## Useful Links
 
 - [Angular CLI](https://angular.dev/tools/cli)
 - [Prisma Docs](https://www.prisma.io/docs)
