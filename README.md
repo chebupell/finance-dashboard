@@ -16,6 +16,9 @@
 
 ---
 
+<img width="1907" height="944" alt="{2BAF6834-BA09-4F7A-8631-148E02EEA6A4}" src="https://github.com/user-attachments/assets/905dd1c7-624c-4fef-83c5-48b0ec72ea4c" />
+
+
 ## Возможности
 
 - Регистрация и вход с JWT-сессией (`localStorage` / `sessionStorage`)
